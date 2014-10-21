@@ -30,7 +30,13 @@ describe "TestRunner", ->
       atom.workspaceView.trigger 'test-runner:toggle'
       promise
 
-  describe 'running rspec tests', ->
+  it 'exposes a handler registry', ->
+    thisPackage = require '../lib/test-runner'
+    TestHandlerRegistry = require '../lib/test-handler-registry'
+
+    expect(thisPackage.handlerRegistry instanceof TestHandlerRegistry).toBeTruthy()
+
+  describe 'running tests', ->
     it 'shows that the tests are running', ->
       atom.workspaceView.getActiveView().trigger 'test-runner:run-all'
 
