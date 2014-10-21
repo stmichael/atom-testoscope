@@ -1,9 +1,7 @@
-{exec} = require 'child_process'
-{dirname} = require 'path'
+BaseHandler = require './base-handler'
 
 module.exports =
-class RspecHandler
+class RspecHandler extends BaseHandler
 
-  run: (path, callback) ->
-    projectPath = atom.project.getRootDirectory().getPath()
-    exec "bash -l -c 'cd #{projectPath} && rspec #{path}'", callback
+  getCommand: (testFilePath) ->
+    "rspec #{testFilePath}'"

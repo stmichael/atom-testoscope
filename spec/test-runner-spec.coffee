@@ -50,7 +50,7 @@ describe "TestRunner", ->
 
       runs ->
         expect(atom.workspaceView.find('.quick-test-result span')).toHaveClass('icon-check')
-        expect(atom.workspaceView.find('.quick-test-result').text()).toEqual('All tests in rspec_spec.rb have been successful')
+        expect(atom.workspaceView.find('.quick-test-result').text()).toEqual('All tests in example_spec.js have been successful')
 
     it 'shows a failure message', ->
       atom.workspaceView.getActiveView().trigger 'test-runner:run-all'
@@ -61,4 +61,14 @@ describe "TestRunner", ->
 
       runs ->
         expect(atom.workspaceView.find('.quick-test-result span')).toHaveClass('icon-stop')
-        expect(atom.workspaceView.find('.quick-test-result').text()).toEqual('The tests in rspec_spec.rb were faulty')
+        expect(atom.workspaceView.find('.quick-test-result').text()).toEqual('The tests in example_spec.js were faulty')
+
+    it 'shows a message when no appropriate handler has been found', ->
+      waitsForPromise ->
+        atom.workspace.open('example.b')
+      runs ->
+        atom.workspaceView.getActiveView().trigger 'test-runner:run-all'
+
+      runs ->
+        expect(atom.workspaceView.find('.quick-test-result span')).toHaveClass('icon-stop')
+        expect(atom.workspaceView.find('.quick-test-result').text()).toEqual('Don\'t know how to run example.b')

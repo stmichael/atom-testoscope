@@ -12,15 +12,15 @@ class QuickResultView extends View
       .addClass('icon icon-clock status-running')
       .text('running')
 
-  setSuccessful: (filepath) ->
+  setSuccessful: (message) ->
     @find('span').removeClass()
       .addClass('icon icon-check status-successful')
-      .text("All tests in #{filepath} have been successful")
+      .text(message)
 
-  setFaulty: (filepath) ->
+  setFaulty: (message) ->
     @find('span').removeClass()
       .addClass('icon icon-stop status-erroneous')
-      .text("The tests in #{filepath} were faulty")
+      .text(message)
 
   destroy: ->
     @detach()
