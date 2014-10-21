@@ -25,7 +25,6 @@ describe "TestRunner", ->
       atom.packages.activatePackage('status-bar')
     waitsForPromise ->
       promise = atom.packages.activatePackage('test-runner')
-      atom.workspaceView.trigger 'test-runner:toggle'
       promise
 
   it 'exposes a handler registry', ->

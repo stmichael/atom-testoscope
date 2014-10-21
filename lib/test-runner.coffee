@@ -39,19 +39,26 @@ class TestSuite
 
 module.exports =
   activate: (state) ->
-    @testSuite = new TestSuite(handlerRegistry)
-    @quickResultView = new QuickResultView()
-    @testSuite.onDidStart =>
-      @quickResultView.setRunning()
-    @testSuite.onWasSuccessful (event) =>
-      @quickResultView.setSuccessful(event.message)
-    @testSuite.onWasFaulty (event) =>
-      @quickResultView.setFaulty(event.message)
+    createStatusEntry = ->
+      @testSuite = new TestSuite(handlerRegistry)
+      @quickResultView = new QuickResultView()
+      @testSuite.onDidStart =>
+        @quickResultView.setRunning()
+      @testSuite.onWasSuccessful (event) =>
+        @quickResultView.setSuccessful(event.message)
+      @testSuite.onWasFaulty (event) =>
+        @quickResultView.setFaulty(event.message)
 
-    atom.workspaceView.statusBar?.appendLeft(@quickResultView)
+      atom.workspaceView.statusBar.appendLeft(@quickResultView)
 
-    atom.workspaceView.command 'test-runner:run-all', =>
-      @testSuite.run(atom.workspace.getActiveTextEditor().getPath())
+      atom.workspaceView.command 'test-runner:run-all', =>
+        @testSuite.run(atom.workspace.getActiveTextEditor().getPath())
+
+    if atom.workspaceView.statusBar
+      createStatusEntry()
+    else
+      atom.packages.once 'activated', =>
+        createStatusEntry()
 
   deactivate: ->
     @quickResultView.destroy() if @quickResultView

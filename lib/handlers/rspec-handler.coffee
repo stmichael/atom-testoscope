@@ -4,4 +4,4 @@ module.exports =
 class RspecHandler extends BaseHandler
 
   getCommand: (testFilePath) ->
-    "rspec #{testFilePath}'"
+    "rspec #{testFilePath}"

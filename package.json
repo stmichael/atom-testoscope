@@ -3,7 +3,7 @@
   "main": "./lib/test-runner",
   "version": "0.0.0",
   "description": "A short description of your package",
-  "activationEvents": ["test-runner:toggle"],
+  "activationEvents": [],
   "repository": "https://github.com/atom/test-runner",
   "license": "MIT",
   "engines": {
