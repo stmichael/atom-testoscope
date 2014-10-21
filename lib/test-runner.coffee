@@ -1,16 +1,11 @@
 QuickResultView = require './quick-result-view'
 {Emitter} = require 'event-kit'
-{exec} = require 'child_process'
 TestHandlerRegistry = require './test-handler-registry'
-
-class BaseHandler
-
-class RspecHandler extends BaseHandler
-
-  run: (callback) ->
-    exec 'ls', callback
+JasmineHandler = require('./handlers/jasmine-handler')
+RspecHandler = require('./handlers/rspec-handler')
 
 handlerRegistry = new TestHandlerRegistry
+handlerRegistry.add(new JasmineHandler, /_spec\.js$/)
 handlerRegistry.add(new RspecHandler, /_spec\.rb$/)
 
 class TestSuite
@@ -21,11 +16,12 @@ class TestSuite
   run: (testPath) ->
     @emitter.emit 'did-start'
     handler = @handlerRegistry.findForFile(testPath)
-    handler.run (error) =>
-      if error
-        @emitter.emit 'was-faulty', executedFile: 'rspec_spec.rb'
-      else
+    handler.run(testPath
+      , =>
         @emitter.emit 'was-successful', executedFile: 'rspec_spec.rb'
+      , =>
+        @emitter.emit 'was-faulty', executedFile: 'rspec_spec.rb'
+      )
 
   onDidStart: (callback) ->
     @emitter.on 'did-start', callback

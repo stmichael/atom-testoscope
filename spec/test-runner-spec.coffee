@@ -12,17 +12,15 @@ describe "TestRunner", ->
 
   beforeEach ->
     execDefer = Q.defer()
-    execDefer.promise.then ->
-      execCallback(null)
-    execDefer.promise.catch (errorCode) ->
-      execCallback(code: errorCode)
+    execDefer.promise.then (error) ->
+      execCallback(error)
 
     require '../lib/test-runner'
     atom.workspaceView = new WorkspaceView
     atom.workspace = atom.workspaceView.model
 
     waitsForPromise ->
-      atom.workspace.open('rspec_spec.rb')
+      atom.workspace.open('example_spec.js')
     waitsForPromise ->
       atom.packages.activatePackage('status-bar')
     waitsForPromise ->
@@ -57,8 +55,8 @@ describe "TestRunner", ->
     it 'shows a failure message', ->
       atom.workspaceView.getActiveView().trigger 'test-runner:run-all'
       runs ->
-        execDefer.reject(1)
-      waitsForPromise shouldReject: true, ->
+        execDefer.resolve(errorCode: 1)
+      waitsForPromise ->
         execDefer.promise
 
       runs ->
