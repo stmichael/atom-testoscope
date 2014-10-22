@@ -4,10 +4,16 @@ class TestHandlerRegistry
     @handlers = []
 
   add: (handler, fileTypes) ->
+    @_add(handler, fileTypes, Array.prototype.push)
+
+  addBefore: (handler, fileTypes) ->
+    @_add(handler, fileTypes, Array.prototype.unshift)
+
+  _add: (handler, fileTypes, addFunction) ->
     if Object.prototype.toString.call(fileTypes) != '[object Array]'
       fileTypes = [fileTypes]
     for fileType in fileTypes
-      @handlers.push
+      addFunction.call @handlers,
         matcher: fileType
         handler: handler
 

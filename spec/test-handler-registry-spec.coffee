@@ -21,3 +21,11 @@ describe 'TestHandlerRegistry', ->
 
     expect(registry.findForFile('example_spec.rb')).toEqual(handler)
     expect(registry.findForFile('example_test.rb')).toEqual(handler)
+
+  it 'register a handler with top priority', ->
+    handler2 = {}
+    registry.add handler, /\.rb$/
+
+    registry.addBefore handler2, /\.rb$/
+
+    expect(registry.findForFile('example.rb')).toEqual(handler2)

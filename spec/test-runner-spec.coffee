@@ -1,21 +1,20 @@
 {WorkspaceView} = require 'atom'
 ChildProcess = require 'child_process'
-Q = require 'q'
+path = require 'path'
 
-# stub exec
-execCallback = undefined
-ChildProcess.exec = (command, callback) ->
-  execCallback = callback
+testRunner = require '../lib/test-runner'
+JasmineHandler = require '../lib/handlers/jasmine-handler'
+
+class TestJasmineHandler extends JasmineHandler
+
+  getCommand: (testFilePath, reportPath) ->
+    "../../node_modules/jasmine-node/bin/jasmine-node --junitreport --output #{reportPath} #{testFilePath}"
 
 describe "TestRunner", ->
-  execDefer = undefined
 
   beforeEach ->
-    execDefer = Q.defer()
-    execDefer.promise.then (error) ->
-      execCallback(error)
+    testRunner.handlerRegistry.addBefore new TestJasmineHandler, /_spec\.js/
 
-    require '../lib/test-runner'
     atom.workspaceView = new WorkspaceView
     atom.workspace = atom.workspaceView.model
 
@@ -34,21 +33,22 @@ describe "TestRunner", ->
   describe 'running complete test files', ->
     it 'shows that the tests are running', ->
       waitsForPromise ->
-        atom.workspace.open('example_spec.js')
+        atom.workspace.open('success_spec.js')
       runs ->
         atom.workspaceView.getActiveView().trigger 'test-runner:run-all'
 
         expect(atom.workspaceView.find('.quick-test-result span')).toHaveClass('icon-clock')
         expect(atom.workspaceView.find('.quick-test-result').text()).toEqual('running')
+      waitsFor ->
+        !atom.workspaceView.find('.quick-test-result span').hasClass('icon-clock')
 
     it 'shows a success message', ->
       waitsForPromise ->
         atom.workspace.open('success_spec.js')
       runs ->
         atom.workspaceView.getActiveView().trigger 'test-runner:run-all'
-        execDefer.resolve()
-      waitsForPromise ->
-        execDefer.promise
+      waitsFor ->
+        !atom.workspaceView.find('.quick-test-result span').hasClass('icon-clock')
 
       runs ->
         expect(atom.workspaceView.find('.quick-test-result span')).toHaveClass('icon-check')
@@ -59,13 +59,12 @@ describe "TestRunner", ->
         atom.workspace.open('fail_spec.js')
       runs ->
         atom.workspaceView.getActiveView().trigger 'test-runner:run-all'
-        execDefer.resolve(errorCode: 1)
-      waitsForPromise ->
-        execDefer.promise
+      waitsFor ->
+        !atom.workspaceView.find('.quick-test-result span').hasClass('icon-clock')
 
       runs ->
         expect(atom.workspaceView.find('.quick-test-result span')).toHaveClass('icon-stop')
-        expect(atom.workspaceView.find('.quick-test-result').text()).toEqual('First failed test: fail_spec.js:3')
+        expect(atom.workspaceView.find('.quick-test-result').text()).toEqual('fail_spec.js:4 # jasmine test suite a failing test')
 
     it 'shows a message when no appropriate handler has been found', ->
       waitsForPromise ->

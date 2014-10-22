@@ -1,13 +1,25 @@
-{exec} = require 'child_process'
-{dirname} = require 'path'
+ChildProcess = require 'child_process'
+path = require 'path'
+os = require 'os'
+fs = require 'fs.extra'
+JunitReportParser = require '../report-parsers/junit-report-parser'
 
 module.exports =
 class BaseHandler
 
+  getReportPath: ->
+    path.join(os.tmpDir(), 'test_runner_reports')
+
+  cleanReportPath: ->
+    if fs.existsSync(@getReportPath())
+      fs.rmrfSync(@getReportPath())
+    fs.mkdirSync(@getReportPath())
+
   run: (testFilePath, successCallback, errorCallback) ->
     projectPath = atom.project.getRootDirectory().getPath()
-    exec "bash -l -c 'cd #{projectPath} && #{@getCommand(testFilePath)}'", (error, stdout, stderr) ->
+    @cleanReportPath()
+    ChildProcess.exec "bash -l -c 'cd #{projectPath} && #{@getCommand(testFilePath, @getReportPath())}'", (error, stdout, stderr) =>
       if error
-        errorCallback()
+        @parseErrors(errorCallback)
       else
         successCallback()

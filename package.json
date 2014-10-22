@@ -10,10 +10,13 @@
     "atom": ">0.50.0"
   },
   "dependencies": {
-    "event-kit": ">= 0.7.2"
+    "event-kit": "^0.7.2",
+    "temp": "^0.8.1",
+    "fs.extra": "^1.2.1",
+    "xmldom": "^0.1.19",
+    "xpath": "^0.0.7"
   },
   "devDependencies": {
-    "q": "^1.0.1",
     "jasmine-node": "^1.14.0"
   }
 }
