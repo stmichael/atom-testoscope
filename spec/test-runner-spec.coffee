@@ -19,6 +19,10 @@ describe "TestRunner", ->
     waitsFor ->
       !atom.workspaceView.find('.quick-test-result span').hasClass('icon-clock')
 
+  waitToOpen = (file) ->
+    waitsForPromise ->
+      atom.workspace.open(file)
+
   expectStatusBarToShowRunningIcon = ->
     expect(atom.workspaceView.find('.quick-test-result span')).toHaveClass('icon-clock')
 
@@ -51,8 +55,7 @@ describe "TestRunner", ->
 
   describe 'running complete test files', ->
     it 'shows that the tests are running', ->
-      waitsForPromise ->
-        atom.workspace.open('success_spec.js')
+      waitToOpen('success_spec.js')
       runs ->
         trigger 'test-runner:run-all'
 
@@ -61,8 +64,7 @@ describe "TestRunner", ->
       waitForTestToBeFinished()
 
     it 'shows a success message', ->
-      waitsForPromise ->
-        atom.workspace.open('success_spec.js')
+      waitToOpen('success_spec.js')
       runs ->
         trigger 'test-runner:run-all'
       waitForTestToBeFinished()
@@ -71,8 +73,7 @@ describe "TestRunner", ->
         expectStatusBarToShow('All tests in success_spec.js have been successful')
 
     it 'shows a failure message', ->
-      waitsForPromise ->
-        atom.workspace.open('fail_spec.js')
+      waitToOpen('fail_spec.js')
       runs ->
         trigger 'test-runner:run-all'
       waitForTestToBeFinished()
@@ -82,11 +83,24 @@ describe "TestRunner", ->
         expectStatusBarToShow('fail_spec.js:4 # jasmine test suite a failing test')
 
     it 'shows a message when no appropriate handler has been found', ->
-      waitsForPromise ->
-        atom.workspace.open('example.b')
+      waitToOpen('example.b')
       runs ->
         trigger 'test-runner:run-all'
 
       runs ->
         expectStatusBarToShowFailureIcon()
         expectStatusBarToShow('Don\'t know how to run example.b')
+
+    it 'run the specs again when another file is open', ->
+      waitToOpen('success_spec.js')
+      runs ->
+        trigger 'test-runner:run-all'
+      waitForTestToBeFinished()
+      waitToOpen('example.b')
+      runs ->
+        trigger 'test-runner:run-all'
+      waitForTestToBeFinished()
+
+      runs ->
+        expectStatusBarToShowSuccessIcon()
+        expectStatusBarToShow('All tests in success_spec.js have been successful')

@@ -14,20 +14,26 @@ class TestSuite
   constructor: (@handlerRegistry) ->
     @emitter = new Emitter
 
-  run: (testPath) ->
+  run: (file) ->
     @emitter.emit 'did-start'
-    relativeTestPath = relative(atom.project.getPaths()[0], testPath)
-    handler = @handlerRegistry.findForFile(testPath)
+    @_runFile(file)
+
+  _runFile: (file) ->
+    relativePath = relative(atom.project.getPaths()[0], file)
+    handler = @handlerRegistry.findForFile(file)
     if handler
-      handler.run(testPath
-        , =>
-          @emitter.emit 'was-successful', message: "All tests in #{relativeTestPath} have been successful"
-        , (errors) =>
-          # @emitter.emit 'was-faulty', message: "The tests in #{relativeTestPath} were faulty"
-          @emitter.emit 'was-faulty', message: "#{errors[0].file}:#{errors[0].line} # #{errors[0].namespace} #{errors[0].name}"
-        )
+      @lastFile = file
+      handler.run(file, (=> @_testSuccessCallback(relativePath)), @_testFailureCallback)
+    else if @lastFile
+      @_runFile(@lastFile)
     else
-      @emitter.emit 'was-faulty', message: "Don't know how to run #{relativeTestPath}"
+      @emitter.emit 'was-faulty', message: "Don't know how to run #{relativePath}"
+
+  _testSuccessCallback: (relativePath) =>
+    @emitter.emit 'was-successful', message: "All tests in #{relativePath} have been successful"
+
+  _testFailureCallback: (errors) =>
+    @emitter.emit 'was-faulty', message: "#{errors[0].file}:#{errors[0].line} # #{errors[0].namespace} #{errors[0].name}"
 
   onDidStart: (callback) ->
     @emitter.on 'did-start', callback
