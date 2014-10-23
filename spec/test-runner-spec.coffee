@@ -12,6 +12,25 @@ class TestJasmineHandler extends JasmineHandler
 
 describe "TestRunner", ->
 
+  trigger = (action) ->
+    atom.workspaceView.getActiveView().trigger action
+
+  waitForTestToBeFinished = ->
+    waitsFor ->
+      !atom.workspaceView.find('.quick-test-result span').hasClass('icon-clock')
+
+  expectStatusBarToShowRunningIcon = ->
+    expect(atom.workspaceView.find('.quick-test-result span')).toHaveClass('icon-clock')
+
+  expectStatusBarToShowSuccessIcon = ->
+    expect(atom.workspaceView.find('.quick-test-result span')).toHaveClass('icon-check')
+
+  expectStatusBarToShowFailureIcon = ->
+    expect(atom.workspaceView.find('.quick-test-result span')).toHaveClass('icon-stop')
+
+  expectStatusBarToShow = (text) ->
+    expect(atom.workspaceView.find('.quick-test-result').text()).toEqual(text)
+
   beforeEach ->
     testRunner.handlerRegistry.addBefore new TestJasmineHandler, /_spec\.js/
 
@@ -35,43 +54,39 @@ describe "TestRunner", ->
       waitsForPromise ->
         atom.workspace.open('success_spec.js')
       runs ->
-        atom.workspaceView.getActiveView().trigger 'test-runner:run-all'
+        trigger 'test-runner:run-all'
 
-        expect(atom.workspaceView.find('.quick-test-result span')).toHaveClass('icon-clock')
-        expect(atom.workspaceView.find('.quick-test-result').text()).toEqual('running')
-      waitsFor ->
-        !atom.workspaceView.find('.quick-test-result span').hasClass('icon-clock')
+        expectStatusBarToShowRunningIcon()
+        expectStatusBarToShow('running')
+      waitForTestToBeFinished()
 
     it 'shows a success message', ->
       waitsForPromise ->
         atom.workspace.open('success_spec.js')
       runs ->
-        atom.workspaceView.getActiveView().trigger 'test-runner:run-all'
-      waitsFor ->
-        !atom.workspaceView.find('.quick-test-result span').hasClass('icon-clock')
-
+        trigger 'test-runner:run-all'
+      waitForTestToBeFinished()
       runs ->
-        expect(atom.workspaceView.find('.quick-test-result span')).toHaveClass('icon-check')
-        expect(atom.workspaceView.find('.quick-test-result').text()).toEqual('All tests in success_spec.js have been successful')
+        expectStatusBarToShowSuccessIcon()
+        expectStatusBarToShow('All tests in success_spec.js have been successful')
 
     it 'shows a failure message', ->
       waitsForPromise ->
         atom.workspace.open('fail_spec.js')
       runs ->
-        atom.workspaceView.getActiveView().trigger 'test-runner:run-all'
-      waitsFor ->
-        !atom.workspaceView.find('.quick-test-result span').hasClass('icon-clock')
+        trigger 'test-runner:run-all'
+      waitForTestToBeFinished()
 
       runs ->
-        expect(atom.workspaceView.find('.quick-test-result span')).toHaveClass('icon-stop')
-        expect(atom.workspaceView.find('.quick-test-result').text()).toEqual('fail_spec.js:4 # jasmine test suite a failing test')
+        expectStatusBarToShowFailureIcon()
+        expectStatusBarToShow('fail_spec.js:4 # jasmine test suite a failing test')
 
     it 'shows a message when no appropriate handler has been found', ->
       waitsForPromise ->
         atom.workspace.open('example.b')
       runs ->
-        atom.workspaceView.getActiveView().trigger 'test-runner:run-all'
+        trigger 'test-runner:run-all'
 
       runs ->
-        expect(atom.workspaceView.find('.quick-test-result span')).toHaveClass('icon-stop')
-        expect(atom.workspaceView.find('.quick-test-result').text()).toEqual('Don\'t know how to run example.b')
+        expectStatusBarToShowFailureIcon()
+        expectStatusBarToShow('Don\'t know how to run example.b')
