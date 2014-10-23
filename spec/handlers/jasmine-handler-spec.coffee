@@ -27,7 +27,7 @@ describe 'JasmineHandler', ->
     errorCallback = (errors) ->
       failingTests = errors
 
-    handler.run 'failing_spec', noop, errorCallback
+    handler.run 'failing-test', noop, errorCallback
     mockExecData.callback(1)
 
     waitsFor ->

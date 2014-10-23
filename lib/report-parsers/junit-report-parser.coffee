@@ -33,12 +33,12 @@ class JunitReportParser
       line.match(whitelistRegex) && !line.match(blacklistRegex)
 
   _extractTestCaller: (stacktrace) ->
-    lineRegex = new RegExp("(#{atom.project.getRootDirectory().getPath()}[^:]*):([0-9]+)")
+    lineRegex = new RegExp("(#{atom.project.getPaths()[0]}[^:]*):([0-9]+)")
     for line in stacktrace.slice(0).reverse()
       match = line.match(lineRegex)
       if match
         return {
-          file: path.relative(atom.project.getRootDirectory().getPath(), match[1])
+          file: path.relative(atom.project.getPaths()[0], match[1])
           line: match[2]
         }
     file: undefined

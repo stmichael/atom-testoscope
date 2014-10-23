@@ -16,7 +16,7 @@ class TestSuite
 
   run: (testPath) ->
     @emitter.emit 'did-start'
-    relativeTestPath = relative(atom.project.getRootDirectory().getPath(), testPath)
+    relativeTestPath = relative(atom.project.getPaths()[0], testPath)
     handler = @handlerRegistry.findForFile(testPath)
     if handler
       handler.run(testPath
