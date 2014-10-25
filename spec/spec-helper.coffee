@@ -1,5 +1,4 @@
 ChildProcess = require 'child_process'
-console.log 'here'
 
 window.mockExec = ->
   data =
