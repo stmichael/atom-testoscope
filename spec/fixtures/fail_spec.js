@@ -1,7 +1,7 @@
 describe('jasmine test suite', function() {
 
   it('a failing test', function() {
-    expecjit(true).toEqual(false);
+    expect(true).toEqual(false);
   });
 
 });

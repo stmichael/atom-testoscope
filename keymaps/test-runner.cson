@@ -7,5 +7,7 @@
 
 # For more detailed documentation see
 # https://atom.io/docs/latest/advanced/keymaps
-'.workspace':
-  'ctrl-alt-o': 'test-runner:toggle'
+
+'.editor':
+  'alt-e': 'test-runner:run-all'
+  'alt-ctrl-e': 'test-runner:toggle-last-stack-trace'
