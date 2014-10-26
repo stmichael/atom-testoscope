@@ -14,7 +14,7 @@ class TestSuite
 
   _runFile: (file) ->
     @lastErrors = []
-    filename = path.basename(file)
+    filename = atom.project.relativize(file)
     handler = @handlerRegistry.findForFile(file)
     if handler
       @lastFile = file
