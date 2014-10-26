@@ -1,5 +1,5 @@
 {Emitter} = require 'event-kit'
-{relative} = require 'path'
+path = require 'path'
 QuickResultView = require './quick-result-view'
 StacktraceView = require './stacktrace-view'
 TestHandlerRegistry = require './test-handler-registry'
@@ -22,22 +22,22 @@ class TestSuite
 
   _runFile: (file) ->
     @lastErrors = []
-    relativePath = relative(atom.project.getPaths()[0], file)
+    filename = path.basename(file)
     handler = @handlerRegistry.findForFile(file)
     if handler
       @lastFile = file
-      handler.run(file, (=> @_testSuccessCallback(relativePath)), @_testFailureCallback)
+      handler.run(file, (=> @_testSuccessCallback(filename)), @_testFailureCallback)
     else if @lastFile
       @_runFile(@lastFile)
     else
-      @emitter.emit 'was-faulty', message: "Don't know how to run #{relativePath}"
+      @emitter.emit 'was-faulty', message: "Don't know how to run #{filename}"
 
-  _testSuccessCallback: (relativePath) =>
-    @emitter.emit 'was-successful', message: "All tests in #{relativePath} have been successful"
+  _testSuccessCallback: (filename) =>
+    @emitter.emit 'was-successful', message: filename
 
   _testFailureCallback: (errors) =>
     @lastErrors = errors
-    @emitter.emit 'was-faulty', message: "#{errors[0].file}:#{errors[0].line} # #{errors[0].namespace} #{errors[0].name}"
+    @emitter.emit 'was-faulty', message: "#{errors[0].file}:#{errors[0].line} / #{errors[0].message}"
 
   wasLastTestErroneous: ->
     @lastErrors.length > 0

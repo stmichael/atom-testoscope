@@ -10,7 +10,7 @@ class JunitReportParser
     for failure in failures
       fullStacktrace = @_buildArrayedStacktrace(xpath.select('./text()', failure)[0].nodeValue)
       stacktrace = @_extractRelevantLines(fullStacktrace)
-      callerLine = @_extractTestCaller(fullStacktrace)
+      callerLine = @_extractTestCaller(stacktrace)
 
       namespace: failure.parentNode.getAttribute('classname')
       name: failure.parentNode.getAttribute('name')

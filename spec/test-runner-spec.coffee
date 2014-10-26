@@ -73,7 +73,7 @@ describe "TestRunner", ->
       waitForTestToBeFinished()
       runs ->
         expectStatusBarToShowSuccessIcon()
-        expectStatusBarToShow('All tests in success_spec.js have been successful')
+        expectStatusBarToShow('success_spec.js')
 
     it 'shows a failure message', ->
       waitToOpen('fail_spec.js')
@@ -82,7 +82,7 @@ describe "TestRunner", ->
 
       runs ->
         expectStatusBarToShowFailureIcon()
-        expectStatusBarToShow('fail_spec.js:4 # jasmine test suite a failing test')
+        expectStatusBarToShow('fail_spec.js:4 / Expected true to equal false.')
 
     it 'shows a message when no appropriate handler has been found', ->
       waitToOpen('example.b')
@@ -102,7 +102,7 @@ describe "TestRunner", ->
 
       runs ->
         expectStatusBarToShowSuccessIcon()
-        expectStatusBarToShow('All tests in success_spec.js have been successful')
+        expectStatusBarToShow('success_spec.js')
 
   describe 'stacktrace view', ->
     expectStacktraceToShow = (stacktrace) ->
