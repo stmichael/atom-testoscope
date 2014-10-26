@@ -84,26 +84,6 @@ describe "TestRunner", ->
         expectStatusBarToShowFailureIcon()
         expectStatusBarToShow('fail_spec.js:4 / Expected true to equal false.')
 
-    it 'shows a message when no appropriate handler has been found', ->
-      waitToOpen('example.b')
-      runTrigger 'test-runner:run-all'
-
-      runs ->
-        expectStatusBarToShowFailureIcon()
-        expectStatusBarToShow('Don\'t know how to run example.b')
-
-    it 'run the specs again when another file is open', ->
-      waitToOpen('success_spec.js')
-      runTrigger 'test-runner:run-all'
-      waitForTestToBeFinished()
-      waitToOpen('example.b')
-      runTrigger 'test-runner:run-all'
-      waitForTestToBeFinished()
-
-      runs ->
-        expectStatusBarToShowSuccessIcon()
-        expectStatusBarToShow('success_spec.js')
-
   describe 'stacktrace view', ->
     expectStacktraceToShow = (stacktrace) ->
       stacktraceItems = atom.workspaceView.find('.stacktrace-view li').text()
