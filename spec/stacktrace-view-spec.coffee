@@ -1,7 +1,7 @@
 {WorkspaceView, $} = require 'atom'
 StacktraceView = require '../lib/stacktrace-view'
 
-fdescribe 'stacktrace view', ->
+describe 'stacktrace view', ->
 
   view = undefined
   stacktrace = [

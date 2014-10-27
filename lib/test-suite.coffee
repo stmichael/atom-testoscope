@@ -29,7 +29,7 @@ class TestSuite
 
   _testFailureCallback: (errors) =>
     @lastErrors = errors
-    @emitter.emit 'was-faulty', message: "#{errors[0].file}:#{errors[0].line} / #{errors[0].message}"
+    @emitter.emit 'was-faulty', message: "#{errors[0].file}:#{errors[0].line}"
 
   wasLastTestErroneous: ->
     @lastErrors.length > 0

@@ -13,7 +13,6 @@ describe 'TestSuite', ->
       errorCallback [
         file: 'some_file.js'
         line: '9'
-        message: 'Not correct'
       ]
 
   beforeEach ->
@@ -57,7 +56,7 @@ describe 'TestSuite', ->
 
     testSuite.run 'some_file.js'
 
-    expect(event.message).toEqual 'some_file.js:9 / Not correct'
+    expect(event.message).toEqual 'some_file.js:9'
 
   it 'runs the last test again when no handler has been found', ->
     handlerRegistry.add successHandler, /\.js$/

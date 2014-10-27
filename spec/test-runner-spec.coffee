@@ -82,7 +82,7 @@ describe "TestRunner", ->
 
       runs ->
         expectStatusBarToShowFailureIcon()
-        expectStatusBarToShow('fail_spec.js:4 / Expected true to equal false.')
+        expectStatusBarToShow('fail_spec.js:4')
 
   describe 'stacktrace view', ->
     expectStacktraceToShow = (stacktrace) ->
