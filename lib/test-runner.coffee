@@ -3,10 +3,12 @@ StacktraceView = require './stacktrace-view'
 
 TestSuite = require './test-suite'
 TestHandlerRegistry = require './test-handler-registry'
+KarmaHandler = require './handlers/karma-handler'
 JasmineHandler = require './handlers/jasmine-handler'
 RspecHandler = require './handlers/rspec-handler'
 
 handlerRegistry = new TestHandlerRegistry
+handlerRegistry.add(new KarmaHandler, /_spec\.js$/)
 handlerRegistry.add(new JasmineHandler, /_spec\.js$/)
 handlerRegistry.add(new RspecHandler, /_spec\.rb$/)
 

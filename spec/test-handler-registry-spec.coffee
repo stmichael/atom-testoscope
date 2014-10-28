@@ -29,3 +29,9 @@ describe 'TestHandlerRegistry', ->
     registry.addBefore handler2, /\.rb$/
 
     expect(registry.findForFile('example.rb')).toEqual(handler2)
+
+  it 'register a handler with a function', ->
+    registry.add handler, (path) ->
+      path.match /\.rb$/
+
+    expect(registry.findForFile('test.rb')).toEqual(handler)

@@ -3,22 +3,30 @@ class TestHandlerRegistry
   constructor: ->
     @handlers = []
 
-  add: (handler, fileTypes) ->
-    @_add(handler, fileTypes, Array.prototype.push)
+  add: (handler, matchings) ->
+    @_add(handler, matchings, Array.prototype.push)
 
-  addBefore: (handler, fileTypes) ->
-    @_add(handler, fileTypes, Array.prototype.unshift)
+  addBefore: (handler, matchings) ->
+    @_add(handler, matchings, Array.prototype.unshift)
 
-  _add: (handler, fileTypes, addFunction) ->
-    if Object.prototype.toString.call(fileTypes) != '[object Array]'
-      fileTypes = [fileTypes]
-    for fileType in fileTypes
+  _add: (handler, matchings, addFunction) ->
+    if Object.prototype.toString.call(matchings) != '[object Array]'
+      matchings = [matchings]
+    for matching in matchings
+      matchingFunction = if Object.prototype.toString.call(matching) == '[object RegExp]'
+        ((matching) ->
+          (path) ->
+            path.match matching
+        )(matching)
+      else
+        matching
+
       addFunction.call @handlers,
-        matcher: fileType
+        matcher: matchingFunction
         handler: handler
 
-  findForFile: (filePath) ->
+  findForFile: (path) ->
     for handlerItem in @handlers
-      if filePath.match(handlerItem.matcher) != null
+      if handlerItem.matcher(path)
         return handlerItem.handler
     return null
