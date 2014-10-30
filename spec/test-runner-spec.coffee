@@ -128,6 +128,13 @@ describe "TestRunner", ->
           /fail_spec\.js/
         ]
 
+      it 'stacktrace disappears before a new test is run', ->
+        runTrigger 'test-runner:run-all'
+
+        runs ->
+          expect(atom.workspaceView.find('.stacktrace').length).toEqual 0
+        waitForTestToBeFinished()
+
     describe 'no test has been run', ->
       it 'doesnt show the stacktrace', ->
         waitToOpen('example.b')

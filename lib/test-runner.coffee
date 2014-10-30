@@ -23,6 +23,7 @@ module.exports =
 
       @testSuite.onDidStart =>
         @resultStatusView.setRunning()
+        @stacktraceView.detach()
       @testSuite.onWasSuccessful (event) =>
         @resultStatusView.setSuccessful(event.message)
       @testSuite.onWasFaulty (event) =>
