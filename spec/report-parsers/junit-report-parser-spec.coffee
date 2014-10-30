@@ -39,15 +39,15 @@ describe 'JunitReportParser', ->
     expect(result.file).toEqual 'fail_spec.js',
     expect(result.line).toEqual '6'
     expect(result.stacktrace).toEqual [
-      {file: '/Users/stmichael/Projects/atom/test-runner/lib/file.js', line: '83', caller: 'null.&lt;anonymous&gt;'}
-      {file: '/Users/stmichael/Projects/atom/test-runner/spec/fixtures/fail_spec.js', line: '6', caller: 'null.&lt;anonymous&gt;'}
+      {file: '/Users/stmichael/Projects/atom/test-runner/lib/file.js', line: '83', caller: 'null.<anonymous>'}
+      {file: '/Users/stmichael/Projects/atom/test-runner/spec/fixtures/fail_spec.js', line: '6', caller: 'null.<anonymous>'}
     ]
     expect(result.fullStacktrace).toEqual [
       {caller: 'new jasmine.ExpectationResult', file: '/Users/stmichael/Projects/atom/test-runner/node_modules/jasmine-node/lib/jasmine-node/jasmine-1.3.1.js', line: '114'}
-      {caller: 'null.&lt;anonymous&gt;', file: '/Users/stmichael/Projects/atom/test-runner/lib/file.js', line: '83'}
+      {caller: 'null.<anonymous>', file: '/Users/stmichael/Projects/atom/test-runner/lib/file.js', line: '83'}
       {caller: 'null.toEqual', file: '/Users/stmichael/Projects/atom/test-runner/node_modules/jasmine-node/lib/jasmine-node/jasmine-1.3.1.js', line: '1316'}
-      {caller: 'null.&lt;anonymous&gt;', file: '/Users/stmichael/Projects/atom/test-runner/spec/fixtures/node_modules/some_library.js', line: '64'}
-      {caller: 'null.&lt;anonymous&gt;', file: '/Users/stmichael/Projects/atom/test-runner/spec/fixtures/fail_spec.js', line: '6'}
+      {caller: 'null.<anonymous>', file: '/Users/stmichael/Projects/atom/test-runner/spec/fixtures/node_modules/some_library.js', line: '64'}
+      {caller: 'null.<anonymous>', file: '/Users/stmichael/Projects/atom/test-runner/spec/fixtures/fail_spec.js', line: '6'}
       {caller: 'jasmine.Block.execute', file: '/Users/stmichael/Projects/atom/test-runner/node_modules/jasmine-node/lib/jasmine-node/jasmine-1.3.1.js', line: '1145'}
       {caller: 'jasmine.Queue.next_', file: '/Users/stmichael/Projects/atom/test-runner/node_modules/jasmine-node/lib/jasmine-node/jasmine-1.3.1.js', line: '2177'}
       {caller: 'jasmine.Queue.start', file: '/Users/stmichael/Projects/atom/test-runner/node_modules/jasmine-node/lib/jasmine-node/jasmine-1.3.1.js', line: '2130'}

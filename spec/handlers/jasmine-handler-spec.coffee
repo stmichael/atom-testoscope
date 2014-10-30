@@ -41,5 +41,5 @@ describe 'JasmineHandler', ->
       expect(failingTest.file).toEqual 'fail_spec.js',
       expect(failingTest.line).toEqual '6'
       expect(failingTest.stacktrace).toEqual [
-        {caller: 'null.&lt;anonymous&gt;', file: '/Users/stmichael/Projects/atom/test-runner/spec/fixtures/fail_spec.js', line: '6'}
+        {caller: 'null.<anonymous>', file: '/Users/stmichael/Projects/atom/test-runner/spec/fixtures/fail_spec.js', line: '6'}
       ]

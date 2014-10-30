@@ -1,6 +1,7 @@
 path = require 'path'
 xpath = require('xpath')
 {DOMParser} = require('xmldom')
+Entities = require('html-entities').AllHtmlEntities;
 
 module.exports =
 class JunitReportParser
@@ -24,6 +25,8 @@ class JunitReportParser
   _buildArrayedStacktrace: (stacktrace) ->
     result = stacktrace.split("\n")
     result = (line.replace(/^\s*/g, '') for line in result)
+    entities = new Entities
+    result = (entities.decode(line) for line in result)
     result.filter (line) ->
       line.length > 0 && line.match(/(\/[\w\d\-_\.]+)+/)
 

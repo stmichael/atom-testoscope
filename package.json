@@ -14,7 +14,8 @@
     "temp": "^0.8.1",
     "fs.extra": "^1.2.1",
     "xmldom": "^0.1.19",
-    "xpath": "^0.0.7"
+    "xpath": "^0.0.7",
+    "html-entities": "^1.1.1"
   },
   "devDependencies": {
     "jasmine-node": "^1.14.0"

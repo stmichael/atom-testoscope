@@ -110,7 +110,7 @@ describe "TestRunner", ->
         trigger 'test-runner:toggle-last-stack-trace'
 
         runs ->
-          expectStacktraceSelectionToShow('fail_spec.js:4 at null.&lt;anonymous&gt;')
+          expectStacktraceSelectionToShow('fail_spec.js:4 at null.<anonymous>')
 
       it 'opens the file selected from the stack trace', ->
         waitToOpen('example.b')
