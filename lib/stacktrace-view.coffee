@@ -1,26 +1,17 @@
-{$$, View, SelectListView} = require 'atom'
-path = require 'path'
+{View, $$} = require 'atom'
 
 module.exports =
-class StacktraceView extends SelectListView
-  initialize: ->
-    super
-    @addClass 'stacktrace-view overlay from-top'
+class StacktraceView extends View
+  @content: ->
+    @div class: 'stacktrace tool-panel panel-bottom padded status-erroneous'
 
-  viewForItem: (item) ->
-    $$ ->
-      @li class: 'two-lines', =>
-        @div "#{path.basename(item.file)}:#{item.line} at #{item.caller}", class: 'primary-line'
-        @div atom.project.relativize(item.file), class: 'secondary-line'
+  show: (error) ->
+    @empty()
+    @append $$ ->
+      @div error.message, class: 'block failure'
+    for item in error.stacktrace
+      relativeFile = atom.project.relativize(item.file)
+      @append $$ ->
+        @div "#{relativeFile}:#{item.line} at #{item.caller}", class: 'block failure'
 
-  show: (stacktrace) ->
-    @setItems stacktrace
-    @attach()
-
-  confirmed: (item) ->
-    atom.workspace.open(item.file).then ->
-      atom.workspace.getActiveTextEditor().setCursorBufferPosition([parseInt(item.line) - 1, 0])
-
-  attach: ->
-    atom.workspaceView.append(this)
-    @focusFilterEditor()
+    atom.workspaceView.prependToBottom(this);

@@ -1,4 +1,5 @@
-QuickResultView = require './quick-result-view'
+ResultStatusView = require './result-status-view'
+StacktraceSelectView = require './stacktrace-select-view'
 StacktraceView = require './stacktrace-view'
 
 TestSuite = require './test-suite'
@@ -16,23 +17,25 @@ module.exports =
   activate: (state) ->
     createStatusEntry = ->
       @testSuite = new TestSuite(handlerRegistry)
-      @quickResultView = new QuickResultView
+      @resultStatusView = new ResultStatusView
+      @stacktraceSelectView = new StacktraceSelectView
       @stacktraceView = new StacktraceView
 
       @testSuite.onDidStart =>
-        @quickResultView.setRunning()
+        @resultStatusView.setRunning()
       @testSuite.onWasSuccessful (event) =>
-        @quickResultView.setSuccessful(event.message)
+        @resultStatusView.setSuccessful(event.message)
       @testSuite.onWasFaulty (event) =>
-        @quickResultView.setFaulty(event.message)
+        @resultStatusView.setFaulty(event.message)
+        @stacktraceView.show(@testSuite.lastErrors[0])
 
-      atom.workspaceView.statusBar.appendLeft(@quickResultView)
+      atom.workspaceView.statusBar.appendLeft(@resultStatusView)
 
       atom.workspaceView.command 'test-runner:run-all', =>
         @testSuite.run(atom.workspace.getActiveTextEditor().getPath())
       atom.workspaceView.command 'test-runner:toggle-last-stack-trace', =>
         if @testSuite.wasLastTestErroneous()
-          @stacktraceView.show(@testSuite.lastErrors[0].stacktrace)
+          @stacktraceSelectView.show(@testSuite.lastErrors[0].stacktrace)
 
     if atom.workspaceView.statusBar
       createStatusEntry()
@@ -41,6 +44,6 @@ module.exports =
         createStatusEntry()
 
   deactivate: ->
-    @quickResultView.destroy() if @quickResultView
+    @resultStatusView.destroy() if @resultStatusView
 
   handlerRegistry: handlerRegistry

@@ -4,7 +4,7 @@
 // for a full listing of what's available.
 @import "ui-variables";
 
-.quick-test-result {
+.test-result-status {
   .status-running {
     color: #ffb84d;
   }
@@ -12,6 +12,12 @@
     color: #47b224;
   }
   .status-erroneous {
-    color: #b20000;
+    color: @text-color-error;
+  }
+}
+
+.stacktrace {
+  .failure {
+    color: @text-color-error;
   }
 }

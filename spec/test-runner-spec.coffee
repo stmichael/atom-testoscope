@@ -1,4 +1,4 @@
-{WorkspaceView} = require 'atom'
+{$, WorkspaceView} = require 'atom'
 ChildProcess = require 'child_process'
 path = require 'path'
 
@@ -21,23 +21,23 @@ describe "TestRunner", ->
 
   waitForTestToBeFinished = ->
     waitsFor ->
-      !atom.workspaceView.find('.quick-test-result span').hasClass('icon-clock')
+      !atom.workspaceView.find('.test-result-status span').hasClass('icon-clock')
 
   waitToOpen = (file) ->
     waitsForPromise ->
       atom.workspace.open(file)
 
   expectStatusBarToShowRunningIcon = ->
-    expect(atom.workspaceView.find('.quick-test-result span')).toHaveClass('icon-clock')
+    expect(atom.workspaceView.find('.test-result-status span')).toHaveClass('icon-clock')
 
   expectStatusBarToShowSuccessIcon = ->
-    expect(atom.workspaceView.find('.quick-test-result span')).toHaveClass('icon-check')
+    expect(atom.workspaceView.find('.test-result-status span')).toHaveClass('icon-check')
 
   expectStatusBarToShowFailureIcon = ->
-    expect(atom.workspaceView.find('.quick-test-result span')).toHaveClass('icon-stop')
+    expect(atom.workspaceView.find('.test-result-status span')).toHaveClass('icon-stop')
 
   expectStatusBarToShow = (text) ->
-    expect(atom.workspaceView.find('.quick-test-result').text()).toEqual(text)
+    expect(atom.workspaceView.find('.test-result-status').text()).toEqual(text)
 
   beforeEach ->
     testRunner.handlerRegistry.addBefore new TestJasmineHandler, /_spec\.js/
@@ -57,7 +57,7 @@ describe "TestRunner", ->
 
     expect(thisPackage.handlerRegistry instanceof TestHandlerRegistry).toBeTruthy()
 
-  describe 'running complete test files', ->
+  describe 'results in the status bar', ->
     it 'shows that the tests are running', ->
       waitToOpen('success_spec.js')
       runs ->
@@ -85,13 +85,20 @@ describe "TestRunner", ->
         expectStatusBarToShow('fail_spec.js:4')
 
   describe 'stacktrace view', ->
-    expectStacktraceToShow = (stacktrace) ->
-      stacktraceItems = atom.workspaceView.find('.stacktrace-view li div:first-child').text()
+    expectStacktraceSelectionToShow = (stacktrace) ->
+      stacktraceItems = atom.workspaceView.find('.stacktrace-selection li div:first-child').text()
       expect(stacktraceItems).toEqual(stacktrace)
 
-    waitForStacktraceToShow = ->
+    expectStacktraceToShow = (stacktrace) ->
+      stacktraceItems = atom.workspaceView.find('.stacktrace .failure').map(->
+        $(this).text()
+      ).toArray()
+      for line, index in stacktrace
+        expect(stacktraceItems[index]).toMatch(line)
+
+    waitForStacktraceSelectionToShow = ->
       waitsFor ->
-        atom.workspaceView.find('.stacktrace-view li').length > 0
+        atom.workspaceView.find('.stacktrace-selection li').length > 0
 
     describe 'with a failed test', ->
       beforeEach ->
@@ -103,17 +110,23 @@ describe "TestRunner", ->
         trigger 'test-runner:toggle-last-stack-trace'
 
         runs ->
-          expectStacktraceToShow('fail_spec.js:4 at null.&lt;anonymous&gt;')
+          expectStacktraceSelectionToShow('fail_spec.js:4 at null.&lt;anonymous&gt;')
 
       it 'opens the file selected from the stack trace', ->
         waitToOpen('example.b')
         runTrigger 'test-runner:toggle-last-stack-trace'
-        waitForStacktraceToShow()
+        waitForStacktraceSelectionToShow()
         runs ->
-          atom.workspaceView.find('.stacktrace-view').view().trigger 'core:confirm'
+          atom.workspaceView.find('.stacktrace-selection').view().trigger 'core:confirm'
 
         waitsFor ->
           atom.workspace.getActiveTextEditor().getPath().match(/fail_spec\.js$/)
+
+      it 'shows the stacktrace in a panel at bottom', ->
+        expectStacktraceToShow [
+          /Expected true to equal false\./,
+          /fail_spec\.js/
+        ]
 
     describe 'no test has been run', ->
       it 'doesnt show the stacktrace', ->

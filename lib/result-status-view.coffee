@@ -1,9 +1,9 @@
 {View} = require 'atom'
 
 module.exports =
-class QuickResultView extends View
+class ResultStatusView extends View
   @content: ->
-    @div is: 'status-bar-quick-test-result', class: 'quick-test-result inline-block', =>
+    @div class: 'test-result-status inline-block', =>
       @span ''
 
   setRunning: ->
