@@ -1,7 +1,7 @@
-path = require 'path'
 xpath = require('xpath')
 {DOMParser} = require('xmldom')
 Entities = require('html-entities').AllHtmlEntities;
+Stacktrace = require './stacktrace'
 
 module.exports =
 class JunitReportParser
@@ -9,26 +9,23 @@ class JunitReportParser
     doc = new DOMParser().parseFromString(data)
     failures = xpath.select('(//failure)', doc)
     for failure in failures
-      fullStacktraceText = @_buildArrayedStacktrace(xpath.select('./text()', failure)[0].nodeValue)
-      fullStacktrace = @_parseStacktrace(fullStacktraceText)
-      stacktrace = @_extractRelevantLines(fullStacktrace)
-      callerLine = @_extractTestCaller(stacktrace)
+      stacktraceTexts = @_buildArrayedStacktrace(xpath.select('./text()', failure)[0].nodeValue)
+      stacktrace = new Stacktrace(@_parseStacktrace(stacktraceTexts))
 
       namespace: failure.parentNode.getAttribute('classname')
       name: failure.parentNode.getAttribute('name')
       message: failure.getAttribute('message')
-      file: atom.project.relativize(callerLine.file)
-      line: callerLine.line
-      fullStacktrace: fullStacktrace
-      stacktrace: stacktrace
+      file: atom.project.relativize(stacktrace.getTestCaller().file)
+      line: stacktrace.getTestCaller().line
+      fullStacktrace: stacktrace.getFullTrace()
+      stacktrace: stacktrace.getRelevantTrace()
 
   _buildArrayedStacktrace: (stacktrace) ->
-    result = stacktrace.split("\n")
-    result = (line.replace(/^\s*/g, '') for line in result)
     entities = new Entities
-    result = (entities.decode(line) for line in result)
+    result = entities.decode(stacktrace).split("\n")
+    result = (line.replace(/^\s+/g, '') for line in result)
     result.filter (line) ->
-      line.length > 0 && line.match(/(\/[\w\d\-_\.]+)+/)
+      line.length > 0 && line.match(/(\/[^\/]+)+/)
 
   _parseStacktrace: (stacktraceText) ->
     for line in stacktraceText
@@ -36,15 +33,3 @@ class JunitReportParser
       caller: matchData[1]
       file: matchData[2]
       line: matchData[4]
-
-  _extractRelevantLines: (stacktrace) ->
-    blacklistRegex = new RegExp('node_modules')
-    whitelistRegex = new RegExp('(\\/[\\w\\d\\-_]+)+')
-    stacktrace.filter (line) ->
-      line.file.match(whitelistRegex) && !line.file.match(blacklistRegex)
-
-  _extractTestCaller: (stacktrace) ->
-    lineRegex = new RegExp(atom.project.getPaths()[0])
-    for line in stacktrace.slice(0).reverse()
-      if line.file.match(lineRegex)
-        return line
