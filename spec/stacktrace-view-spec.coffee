@@ -4,21 +4,21 @@ StacktraceView = require '../lib/stacktrace-view'
 describe 'stacktrace view', ->
 
   view = undefined
-  error = undefined
+  failure = undefined
 
   beforeEach ->
     atom.workspaceView = new WorkspaceView
     atom.workspace = atom.workspaceView.model
     view = new StacktraceView
-    error =
+    failure =
       message: 'You made a mistake.'
       stacktrace: [
         {file: "#{atom.project.getPaths()[0]}/lib/file.js", line: '3', caller: 'test_method'}
         {file: "#{atom.project.getPaths()[0]}/source.js", line: '54', caller: 'start'}
       ]
 
-  it 'shows the error message with the stacktrace', ->
-    view.show error
+  it 'shows the failure message with the stacktrace', ->
+    view.show failure
 
     expect(view.find('.failure').map(-> $(this).text()).toArray())
       .toEqual [

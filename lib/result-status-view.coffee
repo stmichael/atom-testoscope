@@ -18,7 +18,7 @@ class ResultStatusView extends View
 
   setFaulty: (message) ->
     @find('span').removeClass()
-      .addClass('icon icon-stop status-erroneous')
+      .addClass('icon icon-stop status-failure')
       .text(message)
 
   destroy: ->

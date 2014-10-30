@@ -27,15 +27,15 @@ module.exports =
         @resultStatusView.setSuccessful(event.message)
       @testSuite.onWasFaulty (event) =>
         @resultStatusView.setFaulty(event.message)
-        @stacktraceView.show(@testSuite.lastErrors[0])
+        @stacktraceView.show(@testSuite.lastFailure[0])
 
       atom.workspaceView.statusBar.appendLeft(@resultStatusView)
 
       atom.workspaceView.command 'test-runner:run-all', =>
         @testSuite.run(atom.workspace.getActiveTextEditor().getPath())
       atom.workspaceView.command 'test-runner:toggle-last-stack-trace', =>
-        if @testSuite.wasLastTestErroneous()
-          @stacktraceSelectView.show(@testSuite.lastErrors[0].stacktrace)
+        if @testSuite.wasLastTestFailure()
+          @stacktraceSelectView.show(@testSuite.lastFailure[0].stacktrace)
 
     if atom.workspaceView.statusBar
       createStatusEntry()

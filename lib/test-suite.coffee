@@ -6,14 +6,14 @@ class TestSuite
 
   constructor: (@handlerRegistry) ->
     @emitter = new Emitter
-    @lastErrors = []
+    @lastFailure = []
 
   run: (file) ->
     @emitter.emit 'did-start'
     @_runFile(file)
 
   _runFile: (file) ->
-    @lastErrors = []
+    @lastFailure = []
     filename = atom.project.relativize(file)
     handler = @handlerRegistry.findForFile(file)
     if handler
@@ -27,12 +27,12 @@ class TestSuite
   _testSuccessCallback: (filename) =>
     @emitter.emit 'was-successful', message: filename
 
-  _testFailureCallback: (errors) =>
-    @lastErrors = errors
-    @emitter.emit 'was-faulty', message: "#{errors[0].file}:#{errors[0].line}"
+  _testFailureCallback: (failures) =>
+    @lastFailure = failures
+    @emitter.emit 'was-faulty', message: "#{failures[0].file}:#{failures[0].line}"
 
-  wasLastTestErroneous: ->
-    @lastErrors.length > 0
+  wasLastTestFailure: ->
+    @lastFailure.length > 0
 
   onDidStart: (callback) ->
     @emitter.on 'did-start', callback

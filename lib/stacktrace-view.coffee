@@ -3,13 +3,13 @@
 module.exports =
 class StacktraceView extends View
   @content: ->
-    @div class: 'stacktrace tool-panel panel-bottom padded status-erroneous'
+    @div class: 'stacktrace tool-panel panel-bottom padded'
 
-  show: (error) ->
+  show: (failure) ->
     @empty()
     @append $$ ->
-      @div error.message, class: 'block failure'
-    for item in error.stacktrace
+      @div failure.message, class: 'block failure'
+    for item in failure.stacktrace
       relativeFile = atom.project.relativize(item.file)
       @append $$ ->
         @div "#{relativeFile}:#{item.line} at #{item.caller}", class: 'block failure'

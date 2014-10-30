@@ -6,11 +6,11 @@ describe 'TestSuite', ->
   handlerRegistry = undefined
   testSuite = undefined
   successHandler =
-    run: (file, successCallback, errorCallback) ->
+    run: (file, successCallback, failureCallback) ->
       successCallback()
   failureHandler =
-    run: (file, successCallback, errorCallback) ->
-      errorCallback [
+    run: (file, successCallback, failureCallback) ->
+      failureCallback [
         file: 'some_file.js'
         line: '9'
       ]
@@ -72,16 +72,16 @@ describe 'TestSuite', ->
   describe 'failure check', ->
 
     it 'is false when no tests have been run', ->
-      expect(testSuite.wasLastTestErroneous()).toBeFalsy()
+      expect(testSuite.wasLastTestFailure()).toBeFalsy()
 
     it 'is false when the tests have been successful', ->
       handlerRegistry.add successHandler, /\.js$/
       testSuite.run 'some_file.js'
 
-      expect(testSuite.wasLastTestErroneous()).toBeFalsy()
+      expect(testSuite.wasLastTestFailure()).toBeFalsy()
 
     it 'is true when the tests failed', ->
       handlerRegistry.add failureHandler, /\.js$/
       testSuite.run 'some_file.js'
 
-      expect(testSuite.wasLastTestErroneous()).toBeTruthy()
+      expect(testSuite.wasLastTestFailure()).toBeTruthy()
