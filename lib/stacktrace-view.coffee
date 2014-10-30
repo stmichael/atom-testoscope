@@ -18,7 +18,8 @@ class StacktraceView extends SelectListView
     @attach()
 
   confirmed: (item) ->
-    atom.workspace.open(item.file)
+    atom.workspace.open(item.file).then ->
+      atom.workspace.getActiveTextEditor().setCursorBufferPosition([parseInt(item.line) - 1, 0])
 
   attach: ->
     atom.workspaceView.append(this)
