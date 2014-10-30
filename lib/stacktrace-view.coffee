@@ -1,4 +1,5 @@
-{View, SelectListView} = require 'atom'
+{$$, View, SelectListView} = require 'atom'
+path = require 'path'
 
 module.exports =
 class StacktraceView extends SelectListView
@@ -7,20 +8,17 @@ class StacktraceView extends SelectListView
     @addClass 'stacktrace-view overlay from-top'
 
   viewForItem: (item) ->
-    "<li>#{item}</li>"
+    $$ ->
+      @li class: 'two-lines', =>
+        @div "#{path.basename(item.file)}:#{item.line} at #{item.caller}", class: 'primary-line'
+        @div atom.project.relativize(item.file), class: 'secondary-line'
 
   show: (stacktrace) ->
-    @setItems @_extractFilePaths(stacktrace)
+    @setItems stacktrace
     @attach()
 
-  _extractFilePaths: (stacktrace) ->
-    for line in stacktrace
-      lineMatch = line.match(/((\/[\w\d\.\-_]+)+)/)
-      if lineMatch
-        atom.project.relativize(lineMatch[1])
-
   confirmed: (item) ->
-    atom.workspace.open(item)
+    atom.workspace.open(item.file)
 
   attach: ->
     atom.workspaceView.append(this)

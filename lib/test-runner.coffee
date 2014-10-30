@@ -8,7 +8,7 @@ JasmineHandler = require './handlers/jasmine-handler'
 RspecHandler = require './handlers/rspec-handler'
 
 handlerRegistry = new TestHandlerRegistry
-handlerRegistry.add(new KarmaHandler, /_spec\.js$/)
+# handlerRegistry.add(new KarmaHandler, /_spec\.js$/)
 handlerRegistry.add(new JasmineHandler, /_spec\.js$/)
 handlerRegistry.add(new RspecHandler, /_spec\.rb$/)
 

@@ -86,7 +86,7 @@ describe "TestRunner", ->
 
   describe 'stacktrace view', ->
     expectStacktraceToShow = (stacktrace) ->
-      stacktraceItems = atom.workspaceView.find('.stacktrace-view li').text()
+      stacktraceItems = atom.workspaceView.find('.stacktrace-view li div:first-child').text()
       expect(stacktraceItems).toEqual(stacktrace)
 
     waitForStacktraceToShow = ->
@@ -103,7 +103,7 @@ describe "TestRunner", ->
         trigger 'test-runner:toggle-last-stack-trace'
 
         runs ->
-          expectStacktraceToShow('fail_spec.js')
+          expectStacktraceToShow('fail_spec.js:4 at null.&lt;anonymous&gt;')
 
       it 'opens the file selected from the stack trace', ->
         waitToOpen('example.b')

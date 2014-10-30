@@ -39,21 +39,20 @@ describe 'JunitReportParser', ->
     expect(result.file).toEqual 'fail_spec.js',
     expect(result.line).toEqual '6'
     expect(result.stacktrace).toEqual [
-      'at null.&lt;anonymous&gt; (/Users/stmichael/Projects/atom/test-runner/lib/file.js:83:18)',
-      'at null.&lt;anonymous&gt; (/Users/stmichael/Projects/atom/test-runner/spec/fixtures/fail_spec.js:6:18)'
+      {file: '/Users/stmichael/Projects/atom/test-runner/lib/file.js', line: '83', caller: 'null.&lt;anonymous&gt;'}
+      {file: '/Users/stmichael/Projects/atom/test-runner/spec/fixtures/fail_spec.js', line: '6', caller: 'null.&lt;anonymous&gt;'}
     ]
     expect(result.fullStacktrace).toEqual [
-      'Error: Expected true to equal false.',
-      'at new jasmine.ExpectationResult (/Users/stmichael/Projects/atom/test-runner/node_modules/jasmine-node/lib/jasmine-node/jasmine-1.3.1.js:114:32)',
-      'at null.&lt;anonymous&gt; (/Users/stmichael/Projects/atom/test-runner/lib/file.js:83:18)',
-      'at null.toEqual (/Users/stmichael/Projects/atom/test-runner/node_modules/jasmine-node/lib/jasmine-node/jasmine-1.3.1.js:1316:29)',
-      'at null.&lt;anonymous&gt; (/Users/stmichael/Projects/atom/test-runner/spec/fixtures/node_modules/some_library.js:64:98)',
-      'at null.&lt;anonymous&gt; (/Users/stmichael/Projects/atom/test-runner/spec/fixtures/fail_spec.js:6:18)',
-      'at jasmine.Block.execute (/Users/stmichael/Projects/atom/test-runner/node_modules/jasmine-node/lib/jasmine-node/jasmine-1.3.1.js:1145:17)',
-      'at jasmine.Queue.next_ (/Users/stmichael/Projects/atom/test-runner/node_modules/jasmine-node/lib/jasmine-node/jasmine-1.3.1.js:2177:31)',
-      'at jasmine.Queue.start (/Users/stmichael/Projects/atom/test-runner/node_modules/jasmine-node/lib/jasmine-node/jasmine-1.3.1.js:2130:8)',
-      'at jasmine.Spec.execute (/Users/stmichael/Projects/atom/test-runner/node_modules/jasmine-node/lib/jasmine-node/jasmine-1.3.1.js:2458:14)',
-      'at jasmine.Queue.next_ (/Users/stmichael/Projects/atom/test-runner/node_modules/jasmine-node/lib/jasmine-node/jasmine-1.3.1.js:2177:31)',
-      'at jasmine.Queue.start (/Users/stmichael/Projects/atom/test-runner/node_modules/jasmine-node/lib/jasmine-node/jasmine-1.3.1.js:2130:8)',
-      'at jasmine.Suite.execute (/Users/stmichael/Projects/atom/test-runner/node_modules/jasmine-node/lib/jasmine-node/jasmine-1.3.1.js:2604:14)'
+      {caller: 'new jasmine.ExpectationResult', file: '/Users/stmichael/Projects/atom/test-runner/node_modules/jasmine-node/lib/jasmine-node/jasmine-1.3.1.js', line: '114'}
+      {caller: 'null.&lt;anonymous&gt;', file: '/Users/stmichael/Projects/atom/test-runner/lib/file.js', line: '83'}
+      {caller: 'null.toEqual', file: '/Users/stmichael/Projects/atom/test-runner/node_modules/jasmine-node/lib/jasmine-node/jasmine-1.3.1.js', line: '1316'}
+      {caller: 'null.&lt;anonymous&gt;', file: '/Users/stmichael/Projects/atom/test-runner/spec/fixtures/node_modules/some_library.js', line: '64'}
+      {caller: 'null.&lt;anonymous&gt;', file: '/Users/stmichael/Projects/atom/test-runner/spec/fixtures/fail_spec.js', line: '6'}
+      {caller: 'jasmine.Block.execute', file: '/Users/stmichael/Projects/atom/test-runner/node_modules/jasmine-node/lib/jasmine-node/jasmine-1.3.1.js', line: '1145'}
+      {caller: 'jasmine.Queue.next_', file: '/Users/stmichael/Projects/atom/test-runner/node_modules/jasmine-node/lib/jasmine-node/jasmine-1.3.1.js', line: '2177'}
+      {caller: 'jasmine.Queue.start', file: '/Users/stmichael/Projects/atom/test-runner/node_modules/jasmine-node/lib/jasmine-node/jasmine-1.3.1.js', line: '2130'}
+      {caller: 'jasmine.Spec.execute', file: '/Users/stmichael/Projects/atom/test-runner/node_modules/jasmine-node/lib/jasmine-node/jasmine-1.3.1.js', line: '2458'}
+      {caller: 'jasmine.Queue.next_', file: '/Users/stmichael/Projects/atom/test-runner/node_modules/jasmine-node/lib/jasmine-node/jasmine-1.3.1.js', line: '2177'}
+      {caller: 'jasmine.Queue.start', file: '/Users/stmichael/Projects/atom/test-runner/node_modules/jasmine-node/lib/jasmine-node/jasmine-1.3.1.js', line: '2130'}
+      {caller: 'jasmine.Suite.execute', file: '/Users/stmichael/Projects/atom/test-runner/node_modules/jasmine-node/lib/jasmine-node/jasmine-1.3.1.js', line: '2604'}
     ]
