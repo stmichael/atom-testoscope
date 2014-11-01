@@ -1,21 +1,24 @@
 {Emitter} = require 'event-kit'
 path = require 'path'
+TestHandlerFactory = require './test-handler-factory'
 
 module.exports =
 class TestSuite
 
-  constructor: (@handlerRegistry) ->
+  constructor: (handlerRegistry) ->
     @emitter = new Emitter
     @lastFailure = []
+    @handlerFactory = new TestHandlerFactory(handlerRegistry)
 
   run: (file) ->
     @emitter.emit 'did-start'
+    @handlerFactory.readConfigurations()
     @_runFile(file)
 
   _runFile: (file) ->
     @lastFailure = []
     filename = atom.project.relativize(file)
-    handler = @handlerRegistry.findForFile(file)
+    handler = @handlerFactory.findByPath(file)
     if handler
       @lastFile = file
       handler.run(file, (=> @_testSuccessCallback(filename)), @_testFailureCallback)

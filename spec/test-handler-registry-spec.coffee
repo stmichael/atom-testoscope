@@ -1,4 +1,5 @@
 TestHandlerRegistry = require '../lib/test-handler-registry'
+JasmineHandler = require '../lib/handlers/jasmine-handler'
 
 describe 'TestHandlerRegistry', ->
 
@@ -8,30 +9,14 @@ describe 'TestHandlerRegistry', ->
   beforeEach ->
     registry = new TestHandlerRegistry
 
-  it 'register a handler for a file type', ->
-    registry.add handler, /\.rb$/
+  it 'register a handler', ->
+    handler = {}
+    registry.add 'jasmine', handler
 
-    expect(registry.findForFile('test.rb')).toEqual(handler)
+    expect(registry.find('jasmine')).toEqual(handler)
 
-  it 'returns null if no matching handler can be found', ->
-    expect(registry.findForFile('test.js')).toEqual(null)
+  it 'check if a handler is registered', ->
+    expect(registry.has('jasmine')).toBeFalsy()
 
-  it 'handler can be registered with multiple matchers', ->
-    registry.add handler, [/_spec\.rb$/, /_test\.rb/]
-
-    expect(registry.findForFile('example_spec.rb')).toEqual(handler)
-    expect(registry.findForFile('example_test.rb')).toEqual(handler)
-
-  it 'register a handler with top priority', ->
-    handler2 = {}
-    registry.add handler, /\.rb$/
-
-    registry.addBefore handler2, /\.rb$/
-
-    expect(registry.findForFile('example.rb')).toEqual(handler2)
-
-  it 'register a handler with a function', ->
-    registry.add handler, (path) ->
-      path.match /\.rb$/
-
-    expect(registry.findForFile('test.rb')).toEqual(handler)
+    registry.add 'jasmine', {}
+    expect(registry.has('jasmine')).toBeTruthy()

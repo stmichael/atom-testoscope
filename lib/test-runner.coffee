@@ -9,9 +9,9 @@ JasmineHandler = require './handlers/jasmine-handler'
 RspecHandler = require './handlers/rspec-handler'
 
 handlerRegistry = new TestHandlerRegistry
-# handlerRegistry.add(new KarmaHandler, /_spec\.js$/)
-handlerRegistry.add(new JasmineHandler, /_spec\.js$/)
-handlerRegistry.add(new RspecHandler, /_spec\.rb$/)
+handlerRegistry.add('karma', KarmaHandler)
+handlerRegistry.add('jasmine', JasmineHandler)
+handlerRegistry.add('rspec', RspecHandler)
 
 module.exports =
   activate: (state) ->

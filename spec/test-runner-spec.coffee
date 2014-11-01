@@ -40,7 +40,7 @@ describe "TestRunner", ->
     expect(atom.workspaceView.find('.test-result-status').text()).toEqual(text)
 
   beforeEach ->
-    testRunner.handlerRegistry.addBefore new TestJasmineHandler, /_spec\.js/
+    testRunner.handlerRegistry.add 'jasmine', TestJasmineHandler
 
     atom.workspaceView = new WorkspaceView
     atom.workspace = atom.workspaceView.model
@@ -48,8 +48,7 @@ describe "TestRunner", ->
     waitsForPromise ->
       atom.packages.activatePackage('status-bar')
     waitsForPromise ->
-      promise = atom.packages.activatePackage('test-runner')
-      promise
+      atom.packages.activatePackage('test-runner')
 
   it 'exposes a handler registry', ->
     thisPackage = require '../lib/test-runner'
