@@ -4,6 +4,8 @@ StacktraceView = require './stacktrace-view'
 
 TestSuite = require './test-suite'
 TestHandlerRegistry = require './test-handler-registry'
+TestHandlerFactory = require './test-handler-factory'
+
 KarmaHandler = require './handlers/karma-handler'
 JasmineHandler = require './handlers/jasmine-handler'
 RspecHandler = require './handlers/rspec-handler'
@@ -13,10 +15,12 @@ handlerRegistry.add('karma', KarmaHandler)
 handlerRegistry.add('jasmine', JasmineHandler)
 handlerRegistry.add('rspec', RspecHandler)
 
+handlerFactory = new TestHandlerFactory(handlerRegistry)
+
 module.exports =
   activate: (state) ->
     createStatusEntry = ->
-      @testSuite = new TestSuite(handlerRegistry)
+      @testSuite = new TestSuite(handlerFactory)
       @resultStatusView = new ResultStatusView
       @stacktraceSelectView = new StacktraceSelectView
       @stacktraceView = new StacktraceView

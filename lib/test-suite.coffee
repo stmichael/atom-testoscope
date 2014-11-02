@@ -5,14 +5,14 @@ TestHandlerFactory = require './test-handler-factory'
 module.exports =
 class TestSuite
 
-  constructor: (handlerRegistry) ->
+  constructor: (@handlerFactory) ->
     @emitter = new Emitter
     @lastFailure = []
-    @handlerFactory = new TestHandlerFactory(handlerRegistry)
 
   run: (file) ->
     @emitter.emit 'did-start'
-    @handlerFactory.readConfigurations()
+    configPath = path.join(atom.packages.getActivePackage('test-runner').path, 'lib', 'test-handler.cson')
+    @handlerFactory.readConfigurations(configPath)
     @_runFile(file)
 
   _runFile: (file) ->

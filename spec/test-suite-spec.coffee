@@ -1,5 +1,6 @@
 TestSuite = require '../lib/test-suite'
 TestHandlerRegistry = require '../lib/test-handler-registry'
+TestHandlerFactory = require '../lib/test-handler-factory'
 
 describe 'TestSuite', ->
 
@@ -17,7 +18,8 @@ describe 'TestSuite', ->
 
   beforeEach ->
     handlerRegistry = new TestHandlerRegistry
-    testSuite = new TestSuite(handlerRegistry)
+    handlerFactory = new TestHandlerFactory(handlerRegistry)
+    testSuite = new TestSuite(handlerFactory)
     waitsForPromise ->
       atom.packages.activatePackage('status-bar')
     waitsForPromise ->

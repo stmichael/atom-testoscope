@@ -1,0 +1,7 @@
+"handlers":
+  "_spec.js$": "jasmine"
+  "_spec.rb$": "rspec"
+
+"configurations":
+  "rspec":
+    "useBundler": false

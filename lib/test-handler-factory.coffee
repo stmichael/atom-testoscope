@@ -1,5 +1,4 @@
 CSON = require 'season'
-path = require 'path'
 minimatch = require 'minimatch'
 
 module.exports =
@@ -14,7 +13,6 @@ class TestHandlerFactory
       if handlerClass
         return new handlerClass(@configurations[handlerName])
 
-  readConfigurations: ->
-    configPath = path.join(atom.packages.getActivePackage('test-runner').path, 'lib', 'test-handler.cson')
-    data = CSON.readFileSync(configPath)
+  readConfigurations: (path) ->
+    data = CSON.readFileSync(path)
     {@handlers, @configurations} = data
