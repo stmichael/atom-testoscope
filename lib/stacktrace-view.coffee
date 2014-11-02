@@ -14,4 +14,4 @@ class StacktraceView extends View
       @append $$ ->
         @div "#{relativeFile}:#{item.line} at #{item.caller}", class: 'block failure'
 
-    atom.workspaceView.prependToBottom(this);
+    atom.workspace.addBottomPanel(item: this);
