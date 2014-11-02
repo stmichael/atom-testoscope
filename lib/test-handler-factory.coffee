@@ -1,5 +1,6 @@
 CSON = require 'season'
 minimatch = require 'minimatch'
+fs = require 'fs'
 
 module.exports =
 class TestHandlerFactory
@@ -17,8 +18,9 @@ class TestHandlerFactory
     @handlers = {}
     @configurations = {}
     for path in paths
-      data = CSON.readFileSync(path)
-      for key, value of data.handlers
-        @handlers[key] = value
-      for key, value of data.configurations
-        @configurations[key] = value
+      if fs.existsSync(path)
+        data = CSON.readFileSync(path)
+        for key, value of data.handlers
+          @handlers[key] = value
+        for key, value of data.configurations
+          @configurations[key] = value

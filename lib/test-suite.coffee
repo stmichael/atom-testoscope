@@ -15,7 +15,10 @@ class TestSuite
     @_runFile(file)
 
   _getConfigPaths: ->
-    [path.join(atom.packages.getActivePackage('test-runner').path, 'lib', 'test-handler.cson')]
+    [
+      path.join(atom.packages.getActivePackage('test-runner').path, 'lib', 'test-handler.cson'),
+      path.join(atom.project.getPaths()[0], '.test-handler.cson')
+    ]
 
   _runFile: (file) ->
     @lastFailures = []

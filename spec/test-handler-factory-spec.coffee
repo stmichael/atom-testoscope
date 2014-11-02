@@ -55,3 +55,6 @@ describe 'TestHandlerFactory', ->
 
     handler = factory.findByPath('example_spec.rb')
     expect(handler.receivedOptions()).toEqual(useBundler: true)
+
+  it 'ignores an inexistent file', ->
+    factory.readConfigurations(['i_dont_exist.cson'])
