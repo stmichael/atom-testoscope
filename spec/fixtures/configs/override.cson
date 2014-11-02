@@ -1,0 +1,6 @@
+"handlers":
+  "_spec.js$": "rspec"
+
+"configurations":
+  "rspec":
+    "useBundler": true

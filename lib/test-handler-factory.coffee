@@ -13,6 +13,12 @@ class TestHandlerFactory
       if handlerClass
         return new handlerClass(@configurations[handlerName])
 
-  readConfigurations: (path) ->
-    data = CSON.readFileSync(path)
-    {@handlers, @configurations} = data
+  readConfigurations: (paths) ->
+    @handlers = {}
+    @configurations = {}
+    for path in paths
+      data = CSON.readFileSync(path)
+      for key, value of data.handlers
+        @handlers[key] = value
+      for key, value of data.configurations
+        @configurations[key] = value

@@ -11,9 +11,11 @@ class TestSuite
 
   run: (file) ->
     @emitter.emit 'did-start'
-    configPath = path.join(atom.packages.getActivePackage('test-runner').path, 'lib', 'test-handler.cson')
-    @handlerFactory.readConfigurations(configPath)
+    @handlerFactory.readConfigurations(@_getConfigPaths())
     @_runFile(file)
+
+  _getConfigPaths: ->
+    [path.join(atom.packages.getActivePackage('test-runner').path, 'lib', 'test-handler.cson')]
 
   _runFile: (file) ->
     @lastFailure = []
