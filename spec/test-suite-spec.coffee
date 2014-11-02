@@ -42,12 +42,12 @@ describe 'TestSuite', ->
 
     testSuite.run 'example_spec.js'
 
-    expect(event.message).toEqual 'example_spec.js'
+    expect(event.file).toEqual 'example_spec.js'
 
   it 'emits an event when no appropriate handler has been found', ->
     handlerRegistry.add 'jasmine', successHandler
     event = undefined
-    testSuite.onWasFaulty (e) ->
+    testSuite.onWasErroneous (e) ->
       event = e
 
     testSuite.run 'some_file.rb'
@@ -56,13 +56,13 @@ describe 'TestSuite', ->
 
   it 'emits an event when the tests failed', ->
     handlerRegistry.add 'jasmine', failureHandler
-    event = undefined
-    testSuite.onWasFaulty (e) ->
-      event = e
+    called = false
+    testSuite.onWasFaulty ->
+      called = true
 
     testSuite.run 'example_spec.js'
 
-    expect(event.message).toEqual 'example_spec.js:9'
+    expect(called).toBeTruthy()
 
   it 'runs the last test again when no handler has been found', ->
     handlerRegistry.add 'jasmine', successHandler
@@ -73,7 +73,7 @@ describe 'TestSuite', ->
       event = e
     testSuite.run 'example_spec.rb'
 
-    expect(event.message).toEqual 'example_spec.js'
+    expect(event.file).toEqual 'example_spec.js'
 
   describe 'failure check', ->
 

@@ -7,7 +7,7 @@ class TestSuite
 
   constructor: (@handlerFactory) ->
     @emitter = new Emitter
-    @lastFailure = []
+    @lastFailures = []
 
   run: (file) ->
     @emitter.emit 'did-start'
@@ -18,7 +18,7 @@ class TestSuite
     [path.join(atom.packages.getActivePackage('test-runner').path, 'lib', 'test-handler.cson')]
 
   _runFile: (file) ->
-    @lastFailure = []
+    @lastFailures = []
     filename = atom.project.relativize(file)
     handler = @handlerFactory.findByPath(file)
     if handler
@@ -27,17 +27,17 @@ class TestSuite
     else if @lastFile
       @_runFile(@lastFile)
     else
-      @emitter.emit 'was-faulty', message: "Don't know how to run #{filename}"
+      @emitter.emit 'was-erroneous', message: "Don't know how to run #{filename}"
 
   _testSuccessCallback: (filename) =>
-    @emitter.emit 'was-successful', message: filename
+    @emitter.emit 'was-successful', file: filename
 
   _testFailureCallback: (failures) =>
-    @lastFailure = failures
-    @emitter.emit 'was-faulty', message: "#{failures[0].file}:#{failures[0].line}"
+    @lastFailures = failures
+    @emitter.emit 'was-faulty'
 
   wasLastTestFailure: ->
-    @lastFailure.length > 0
+    @lastFailures.length > 0
 
   onDidStart: (callback) ->
     @emitter.on 'did-start', callback
@@ -47,3 +47,6 @@ class TestSuite
 
   onWasFaulty: (callback) ->
     @emitter.on 'was-faulty', callback
+
+  onWasErroneous: (callback) ->
+    @emitter.on 'was-erroneous', callback

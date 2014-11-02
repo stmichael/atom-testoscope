@@ -29,10 +29,12 @@ module.exports =
         @resultStatusView.setRunning()
         @stacktraceView.detach()
       @testSuite.onWasSuccessful (event) =>
-        @resultStatusView.setSuccessful(event.message)
-      @testSuite.onWasFaulty (event) =>
-        @resultStatusView.setFaulty(event.message)
-        @stacktraceView.show(@testSuite.lastFailure[0])
+        @resultStatusView.setSuccessful(event.file)
+      @testSuite.onWasFaulty =>
+        @resultStatusView.setFaulty("#{@testSuite.lastFailures[0].file}:#{@testSuite.lastFailures[0].line}")
+        @stacktraceView.show(@testSuite.lastFailures[0])
+      @testSuite.onWasErroneous (event) =>
+        @resultStatusView.setFaulty event.message
 
       atom.workspaceView.statusBar.appendLeft(@resultStatusView)
 
@@ -40,7 +42,7 @@ module.exports =
         @testSuite.run(atom.workspace.getActiveTextEditor().getPath())
       atom.workspaceView.command 'test-runner:toggle-last-stack-trace', =>
         if @testSuite.wasLastTestFailure()
-          @stacktraceSelectView.show(@testSuite.lastFailure[0].stacktrace)
+          @stacktraceSelectView.show(@testSuite.lastFailures[0].stacktrace)
 
     if atom.workspaceView.statusBar
       createStatusEntry()

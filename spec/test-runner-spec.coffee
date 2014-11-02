@@ -83,6 +83,15 @@ describe "TestRunner", ->
         expectStatusBarToShowFailureIcon()
         expectStatusBarToShow('fail_spec.js:4')
 
+    it 'shows a message when a test file cannot be executed', ->
+      waitToOpen('example.b')
+      runTrigger 'test-runner:run-all'
+      waitForTestToBeFinished()
+
+      runs ->
+        expectStatusBarToShowFailureIcon()
+        expectStatusBarToShow("Don't know how to run example.b")
+
   describe 'stacktrace view', ->
     expectStacktraceSelectionToShow = (stacktrace) ->
       stacktraceItems = atom.workspaceView.find('.stacktrace-selection li div:first-child').text()
