@@ -6,8 +6,13 @@ JunitReportParser = require '../report-parsers/junit-report-parser'
 module.exports =
 class KarmaHandler extends BaseHandler
 
+  constructor: (options) ->
+    super
+    options = options || {}
+    @configFile = options.config
+
   getCommand: (testFilePath, reportPath) ->
-    "node_modules/karma/bin/karma start --reporters junit karma.coffee"
+    "node_modules/karma/bin/karma start #{@configFile} --single-run --reporters junit"
 
   parseErrors: (callback) ->
     file = path.join(atom.project.getPaths()[0], 'test-results.xml')

@@ -37,7 +37,7 @@ describe 'JasmineHandler', ->
       failingTest = failingTests[0]
       expect(failingTest.namespace).toEqual 'jasmine test suite'
       expect(failingTest.name).toEqual 'a failing test',
-      expect(failingTest.message).toEqual 'Expected true to equal false.',
+      expect(failingTest.message).toEqual 'Error: Expected true to equal false.',
       expect(failingTest.file).toEqual 'fail_spec.js',
       expect(failingTest.line).toEqual '6'
       expect(failingTest.stacktrace).toEqual [

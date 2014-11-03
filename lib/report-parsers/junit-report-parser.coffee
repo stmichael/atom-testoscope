@@ -36,5 +36,7 @@ class JunitReportParser
 
   _extractFailureMessage: (stacktrace) ->
     entities = new Entities
-    entities.decode(stacktrace).split("\n")[0]
-      .replace(/^\s+/g, '')
+    stacktraceLines = entities.decode(stacktrace).split("\n")
+      .filter (line) ->
+        line.length > 0
+    stacktraceLines[0].replace(/^\s+/g, '')

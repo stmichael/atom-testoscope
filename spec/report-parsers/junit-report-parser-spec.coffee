@@ -38,7 +38,7 @@ describe 'JunitReportParser', ->
     result = results[0]
     expect(result.namespace).toEqual 'jasmine test suite'
     expect(result.name).toEqual 'a failing test',
-    expect(result.message).toEqual 'Expected true to equal false.',
+    expect(result.message).toEqual 'Error: Expected true to equal false.',
     expect(result.file).toEqual 'spec/fixtures/fail_spec.js',
     expect(result.line).toEqual '6'
     expect(result.stacktrace).toEqual [
