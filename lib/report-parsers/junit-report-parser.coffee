@@ -14,7 +14,7 @@ class JunitReportParser
 
       namespace: failure.parentNode.getAttribute('classname')
       name: failure.parentNode.getAttribute('name')
-      message: failure.getAttribute('message')
+      message: @_extractFailureMessage(xpath.select('./text()', failure)[0].nodeValue)
       file: atom.project.relativize(stacktrace.getTestCaller().file)
       line: stacktrace.getTestCaller().line
       fullStacktrace: stacktrace.getFullTrace()
@@ -33,3 +33,8 @@ class JunitReportParser
       caller: matchData[1]
       file: matchData[2]
       line: matchData[4]
+
+  _extractFailureMessage: (stacktrace) ->
+    entities = new Entities
+    entities.decode(stacktrace).split("\n")[0]
+      .replace(/^\s+/g, '')

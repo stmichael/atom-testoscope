@@ -6,8 +6,16 @@ RspecReportParser = require '../report-parsers/rspec-report-parser'
 module.exports =
 class RspecHandler extends BaseHandler
 
+  constructor: (options) ->
+    super
+    options = options || {}
+    @useBundler = options.useBundler
+
   getCommand: (testFilePath, reportPath) ->
-    "rspec --format json --out #{path.join(reportPath, 'rspec.json')} #{testFilePath}"
+    if @useBundler
+      "bundle exec rspec --format json --out #{path.join(reportPath, 'rspec.json')} #{testFilePath}"
+    else
+      "rspec --format json --out #{path.join(reportPath, 'rspec.json')} #{testFilePath}"
 
   parseErrors: (callback) ->
     file = path.join(@getReportPath(), 'rspec.json')
