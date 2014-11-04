@@ -7,7 +7,7 @@ JasmineHandler = require '../lib/handlers/jasmine-handler'
 
 class TestJasmineHandler extends JasmineHandler
 
-  getCommand: (testFilePath, reportPath) ->
+  _getCommand: (testFilePath, reportPath) ->
     "../../node_modules/jasmine-node/bin/jasmine-node --junitreport --output #{reportPath} #{testFilePath}"
 
 describe "TestRunner", ->

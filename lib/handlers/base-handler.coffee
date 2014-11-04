@@ -16,10 +16,16 @@ class BaseHandler
     fs.mkdirSync(@getReportPath())
 
   run: (testFilePath, successCallback, errorCallback) ->
-    projectPath = atom.project.getPaths()[0]
     @cleanReportPath()
-    ChildProcess.exec "bash -l -c 'cd #{projectPath} && #{@getCommand(testFilePath, @getReportPath())}'", (error, stdout, stderr) =>
+    @executeTestCommand(testFilePath, successCallback, errorCallback)
+
+  executeTestCommand: (testFilePath, successCallback, errorCallback) ->
+    ChildProcess.exec @_getBashCommand(testFilePath), (error, stdout, stderr) =>
       if error
         @parseErrors(errorCallback)
       else
         successCallback()
+
+  _getBashCommand: (testFilePath) ->
+    projectPath = atom.project.getPaths()[0]
+    "bash -l -c 'cd #{projectPath} && #{@_getCommand(testFilePath, @getReportPath())}'"

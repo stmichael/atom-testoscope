@@ -11,7 +11,7 @@ class RspecHandler extends BaseHandler
     options = options || {}
     @useBundler = options.useBundler
 
-  getCommand: (testFilePath, reportPath) ->
+  _getCommand: (testFilePath, reportPath) ->
     if @useBundler
       "bundle exec rspec --format json --out #{path.join(reportPath, 'rspec.json')} #{testFilePath}"
     else
@@ -20,5 +20,5 @@ class RspecHandler extends BaseHandler
   parseErrors: (callback) ->
     file = path.join(@getReportPath(), 'rspec.json')
     fs.readFile file, encoding: 'UTF-8', (err, data) =>
-      errors = new RspecReportParser(atom.project.getPaths()[0]).parse(data)
+      errors = new RspecReportParser().parse(data)
       callback(errors)

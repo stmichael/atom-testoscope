@@ -6,7 +6,7 @@ JunitReportParser = require '../report-parsers/junit-report-parser'
 module.exports =
 class JasmineHandler extends BaseHandler
 
-  getCommand: (testFilePath, reportPath) ->
+  _getCommand: (testFilePath, reportPath) ->
     "node_modules/jasmine-node/bin/jasmine-node --junitreport --output #{reportPath} #{testFilePath}"
 
   parseErrors: (callback) ->

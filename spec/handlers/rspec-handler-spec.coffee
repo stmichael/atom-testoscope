@@ -1,4 +1,3 @@
-require '../spec-helper'
 path = require 'path'
 
 RspecHandler = require '../../lib/handlers/rspec-handler'
@@ -10,27 +9,21 @@ describe 'RspecHandler', ->
   noop = ->
 
   class FakeRspecHandler extends RspecHandler
-    getReportPath: ->
-      path.join(path.dirname(module.filename), '..', 'fixtures', 'rspec-reports')
-
-    cleanReportPath: ->
+    _getBashCommand: (testFilePath) ->
+      "cp #{path.join(path.dirname(module.filename), '..', 'fixtures', 'rspec-reports', 'rspec.json')} #{@getReportPath()} && exit 1"
 
   beforeEach ->
-    mockExecData = mockExec()
-    atom.project.setPaths(['/Users/someuser/Projects/atom/test-runner'])
-
-  afterEach ->
-    resetExec(mockExecData)
+    atom.project.setPaths(['/Users/someuser/Projects/atom/test-runner/dummy'])
 
   describe 'configuration', ->
     it 'executes rspec', ->
       handler = new FakeRspecHandler(useBundler: false)
-      expect(handler.getCommand('test.rb', 'some/path'))
+      expect(handler._getCommand('test.rb', 'some/path'))
         .toEqual('rspec --format json --out some/path/rspec.json test.rb')
 
     it 'executes rspec with bundler', ->
       handler = new FakeRspecHandler(useBundler: true)
-      expect(handler.getCommand('test.rb', 'some/path'))
+      expect(handler._getCommand('test.rb', 'some/path'))
         .toEqual('bundle exec rspec --format json --out some/path/rspec.json test.rb')
 
   describe 'report parsing', ->
@@ -43,7 +36,6 @@ describe 'RspecHandler', ->
         failingTests = errors
 
       handler.run 'failing-test', noop, errorCallback
-      mockExecData.callback(1)
 
       waitsFor ->
         failingTests != undefined

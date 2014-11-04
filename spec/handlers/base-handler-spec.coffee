@@ -9,7 +9,7 @@ describe 'BaseHandler', ->
 
     cleanReportPath: ->
 
-    getCommand: (testFilePath, reportPath) ->
+    _getCommand: (testFilePath, reportPath) ->
       "spec #{testFilePath}"
 
     parseErrors: (callback) ->
