@@ -60,7 +60,7 @@ describe 'RspecHandler', ->
         failure = result.getFailures()[0]
         expect(failure.namespace).toEqual 'ErrorsPresenter nested errors'
         expect(failure.name).toEqual 'exports nested errors',
-        expect(failure.message).toEqual "undefined method `injfect' for {:questions=\u003e[#\u003cRSpec::Mocks::Mock:0x3fcf34f0bd7c @name=nil\u003e]}:Hash",
+        expect(failure.messages).toEqual ["undefined method `injfect' for {:questions=\u003e[#\u003cRSpec::Mocks::Mock:0x3fcf34f0bd7c @name=nil\u003e]}:Hash"],
         expect(failure.file).toEqual './spec/unit/presenters/errors_presenter_spec.rb',
         expect(failure.line).toEqual '32'
         expect(failure.stacktrace).toEqual [

@@ -19,7 +19,7 @@ describe 'RspecReportParser', ->
         "line_number":32,
         "exception":{
           "class":"NoMethodError",
-          "message":"undefined method `injfect' for {:questions=\u003e[#\u003cRSpec::Mocks::Mock:0x3fcf34f0bd7c @name=nil\u003e]}:Hash",
+          "message":"undefined method `injfect'\\nfor {:questions=\u003e[#\u003cRSpec::Mocks::Mock:0x3fcf34f0bd7c @name=nil\u003e]}:Hash",
           "backtrace":[
             "/Users/someuser/Projects/atom/test-runner/app/presenters/errors_presenter.rb:15:in `fields_as_json'",
             "/Users/someuser/Projects/atom/test-runner/app/presenters/errors_presenter.rb:10:in `as_json'",
@@ -68,7 +68,7 @@ describe 'RspecReportParser', ->
     failure = result.getFailures()[0]
     expect(failure.namespace).toEqual 'ErrorsPresenter nested errors'
     expect(failure.name).toEqual 'exports nested errors',
-    expect(failure.message).toEqual "undefined method `injfect' for {:questions=\u003e[#\u003cRSpec::Mocks::Mock:0x3fcf34f0bd7c @name=nil\u003e]}:Hash",
+    expect(failure.messages).toEqual ["undefined method `injfect'", "for {:questions=\u003e[#\u003cRSpec::Mocks::Mock:0x3fcf34f0bd7c @name=nil\u003e]}:Hash"],
     expect(failure.file).toEqual './spec/unit/presenters/errors_presenter_spec.rb',
     expect(failure.line).toEqual '32'
     expect(failure.stacktrace).toEqual [

@@ -55,7 +55,7 @@ describe 'KarmaHandler', ->
         failure = result.getFailures()[0]
         expect(failure.namespace).toEqual 'jasmine test suite'
         expect(failure.name).toEqual 'a failing test',
-        expect(failure.message).toEqual 'Error: Expected true to equal false.',
+        expect(failure.messages).toEqual ['Error: Expected true to equal false.'],
         expect(failure.file).toEqual 'spec/fixtures/fail_spec.js',
         expect(failure.line).toEqual '6'
         expect(failure.stacktrace).toEqual [

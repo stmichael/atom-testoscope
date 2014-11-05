@@ -11,7 +11,7 @@ describe 'stacktrace view', ->
     atom.workspace = atom.workspaceView.model
     view = new StacktraceView
     failure =
-      message: 'You made a mistake.'
+      messages: ['You made', 'a mistake.']
       stacktrace: [
         {file: "#{atom.project.getPaths()[0]}/lib/file.js", line: '3', caller: 'test_method'}
         {file: "#{atom.project.getPaths()[0]}/source.js", line: '54', caller: 'start'}
@@ -20,9 +20,11 @@ describe 'stacktrace view', ->
   it 'shows the failure message with the stacktrace', ->
     view.show failure
 
-    expect(view.find('.failure').map(-> $(this).text()).toArray())
+    expect(view.find('.failure.message span').map(-> $(this).text()).toArray())
+      .toEqual ['You made', 'a mistake.']
+
+    expect(view.find('.failure.stacktrace').map(-> $(this).text()).toArray())
       .toEqual [
-        'You made a mistake.',
         'lib/file.js:3 at test_method',
         'source.js:54 at start'
       ]

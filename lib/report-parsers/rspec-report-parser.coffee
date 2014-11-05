@@ -6,7 +6,6 @@ class RspecReportParser
 
   parse: (data) ->
     result = new TestSuiteResult
-    console.log data
     reportObject = JSON.parse(data)
     for example in reportObject.examples
       if example.status == 'failed'
@@ -14,7 +13,7 @@ class RspecReportParser
         result.addFailure
           namespace: example.full_description.replace(new RegExp(" #{example.description}"), '')
           name: example.description
-          message: example.exception.message
+          messages: example.exception.message.split("\n")
           file: example.file_path
           line: example.line_number.toString()
           fullStacktrace: stacktrace.getFullTrace()

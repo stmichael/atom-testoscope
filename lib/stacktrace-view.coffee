@@ -8,10 +8,13 @@ class StacktraceView extends View
   show: (failure) ->
     @empty()
     @append $$ ->
-      @div failure.message, class: 'block failure'
+      @div class: 'block failure message', =>
+        for message in failure.messages
+          @span message
+          @tag 'br'
     for item in failure.stacktrace
       relativeFile = atom.project.relativize(item.file)
       @append $$ ->
-        @div "#{relativeFile}:#{item.line} at #{item.caller}", class: 'block failure'
+        @div "#{relativeFile}:#{item.line} at #{item.caller}", class: 'block failure stacktrace'
 
     atom.workspace.addBottomPanel(item: this);
