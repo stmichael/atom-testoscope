@@ -44,6 +44,8 @@ module.exports =
       atom.workspaceView.command 'test-runner:toggle-last-stack-trace', =>
         unless @testSuite.wasSuccessful()
           @stacktraceSelectView.show(@testSuite.getLastResult().getFirstFailure().stacktrace)
+      atom.workspaceView.command 'core:cancel', =>
+        @stacktraceView.detach()
 
     if atom.workspaceView.statusBar
       createStatusEntry()

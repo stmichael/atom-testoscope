@@ -23,7 +23,7 @@ describe 'stacktrace view', ->
     expect(view.find('.failure.message span').map(-> $(this).text()).toArray())
       .toEqual ['You made', 'a mistake.']
 
-    expect(view.find('.failure.stacktrace').map(-> $(this).text()).toArray())
+    expect(view.find('.failure.stacktrace-line').map(-> $(this).text()).toArray())
       .toEqual [
         'lib/file.js:3 at test_method',
         'source.js:54 at start'

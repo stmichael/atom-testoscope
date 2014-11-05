@@ -15,6 +15,6 @@ class StacktraceView extends View
     for item in failure.stacktrace
       relativeFile = atom.project.relativize(item.file)
       @append $$ ->
-        @div "#{relativeFile}:#{item.line} at #{item.caller}", class: 'block failure stacktrace'
+        @div "#{relativeFile}:#{item.line} at #{item.caller}", class: 'block failure stacktrace-line'
 
     atom.workspace.addBottomPanel(item: this);

@@ -143,6 +143,12 @@ describe "TestRunner", ->
           expect(atom.workspaceView.find('.stacktrace').length).toEqual 0
         waitForTestToBeFinished()
 
+      it 'stacktrace disappears when esc is pressed', ->
+        runTrigger('core:cancel')
+
+        runs ->
+          expect(atom.workspaceView.find('.stacktrace').length).toEqual 0
+
     describe 'no test has been run', ->
       it 'doesnt show the stacktrace', ->
         waitToOpen('example.b')
