@@ -6,15 +6,23 @@ describe 'TestSuite', ->
 
   handlerRegistry = undefined
   testSuite = undefined
+  successfulResult =
+    wasSuccessful: ->
+      true
+  failureResult =
+    wasSuccessful: ->
+      false
+    getFailures: ->
+      [
+        file: 'example_spec.js'
+        line: '9'
+      ]
   successHandler = ->
   successHandler.prototype.run = (file, successCallback, failureCallback) ->
-    successCallback()
+    successCallback(successfulResult)
   failureHandler = ->
   failureHandler.prototype.run = (file, successCallback, failureCallback) ->
-    failureCallback [
-      file: 'example_spec.js'
-      line: '9'
-    ]
+    successCallback(failureResult)
 
   beforeEach ->
     handlerRegistry = new TestHandlerRegistry
@@ -78,16 +86,16 @@ describe 'TestSuite', ->
   describe 'failure check', ->
 
     it 'is false when no tests have been run', ->
-      expect(testSuite.wasLastTestFailure()).toBeFalsy()
+      expect(testSuite.wasSuccessful()).toBeTruthy()
 
     it 'is false when the tests have been successful', ->
       handlerRegistry.add 'jasmine', successHandler
       testSuite.run 'example_spec.js'
 
-      expect(testSuite.wasLastTestFailure()).toBeFalsy()
+      expect(testSuite.wasSuccessful()).toBeTruthy()
 
     it 'is true when the tests failed', ->
       handlerRegistry.add 'jasmine', failureHandler
       testSuite.run 'example_spec.js'
 
-      expect(testSuite.wasLastTestFailure()).toBeTruthy()
+      expect(testSuite.wasSuccessful()).toBeFalsy()

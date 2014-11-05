@@ -32,20 +32,21 @@ describe 'JunitReportParser', ->
 
   it 'converts an junit report into an object', ->
     parser = new JunitReportParser
-    results = parser.parse(report)
+    result = parser.parse(report)
 
-    expect(results.length).toEqual 1
-    result = results[0]
-    expect(result.namespace).toEqual 'jasmine test suite'
-    expect(result.name).toEqual 'a failing test',
-    expect(result.message).toEqual 'Error: Expected true to equal false.',
-    expect(result.file).toEqual 'spec/fixtures/fail_spec.js',
-    expect(result.line).toEqual '6'
-    expect(result.stacktrace).toEqual [
+    expect(result.wasSuccessful()).toBeFalsy()
+    expect(result.getFailures().length).toEqual 1
+    failure = result.getFailures()[0]
+    expect(failure.namespace).toEqual 'jasmine test suite'
+    expect(failure.name).toEqual 'a failing test',
+    expect(failure.message).toEqual 'Error: Expected true to equal false.',
+    expect(failure.file).toEqual 'spec/fixtures/fail_spec.js',
+    expect(failure.line).toEqual '6'
+    expect(failure.stacktrace).toEqual [
       {file: '/Users/someuser/Projects/atom/test-runner/lib/file.js', line: '83', caller: 'null.<anonymous>'}
       {file: '/Users/someuser/Projects/atom/test-runner/spec/fixtures/fail_spec.js', line: '6', caller: 'null.<anonymous>'}
     ]
-    expect(result.fullStacktrace).toEqual [
+    expect(failure.fullStacktrace).toEqual [
       {caller: 'new jasmine.ExpectationResult', file: '/Users/someuser/Projects/atom/test-runner/node_modules/jasmine-node/lib/jasmine-node/jasmine-1.3.1.js', line: '114'}
       {caller: 'null.<anonymous>', file: '/Users/someuser/Projects/atom/test-runner/lib/file.js', line: '83'}
       {caller: 'null.toEqual', file: '/Users/someuser/Projects/atom/test-runner/node_modules/jasmine-node/lib/jasmine-node/jasmine-1.3.1.js', line: '1316'}

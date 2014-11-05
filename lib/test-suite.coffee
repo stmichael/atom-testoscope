@@ -26,21 +26,28 @@ class TestSuite
     handler = @handlerFactory.findByPath(file)
     if handler
       @lastFile = file
-      handler.run(file, (=> @_testSuccessCallback(filename)), @_testFailureCallback)
+      handler.run(file, @_testSuccessCallback, @_testFailureCallback)
     else if @lastFile
       @_runFile(@lastFile)
     else
       @emitter.emit 'was-erroneous', message: "Don't know how to run #{filename}"
 
-  _testSuccessCallback: (filename) =>
-    @emitter.emit 'was-successful', file: filename
+  _testSuccessCallback: (result) =>
+    @lastResult = result
+    if result.wasSuccessful()
+      @emitter.emit 'was-successful', file: @lastFile
+    else
+      @emitter.emit 'was-faulty'
 
   _testFailureCallback: (failures) =>
     @lastFailures = failures
     @emitter.emit 'was-faulty'
 
-  wasLastTestFailure: ->
-    @lastFailures.length > 0
+  wasSuccessful: ->
+    !@lastResult || @lastResult.wasSuccessful()
+
+  getLastResult: ->
+    @lastResult
 
   onDidStart: (callback) ->
     @emitter.on 'did-start', callback

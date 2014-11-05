@@ -9,30 +9,46 @@ describe 'JasmineHandler', ->
   noop = ->
 
   class FakeJasmineHandler extends JasmineHandler
+    constructor: (@reportFile) ->
+
     _getBashCommand: (testFilePath) ->
-      "cp #{path.join(path.dirname(module.filename), '..', 'fixtures', 'junit-reports', 'fail.xml')} #{@getReportPath()} && exit 1"
+      "cp #{path.join(path.dirname(module.filename), '..', 'fixtures', 'junit-reports', @reportFile)} #{@getReportPath()}"
 
   beforeEach ->
     atom.project.setPaths(['/Users/someuser/Projects/atom/test-runner/dummy'])
-    handler = new FakeJasmineHandler
 
-  it 'parses the junit report', ->
-    failingTests = undefined
-    errorCallback = (errors) ->
-      failingTests = errors
+  it 'the tests were successful', ->
+    result = undefined
+    callback = (r) ->
+      result = r
 
-    handler.run 'failing-test', noop, errorCallback
+    handler = new FakeJasmineHandler('success.xml')
+    handler.run 'successful-test', callback, noop
 
     waitsFor ->
-      failingTests != undefined
+      result isnt undefined
     runs ->
-      expect(failingTests.length).toEqual 1
-      failingTest = failingTests[0]
-      expect(failingTest.namespace).toEqual 'jasmine test suite'
-      expect(failingTest.name).toEqual 'a failing test',
-      expect(failingTest.message).toEqual 'Error: Expected true to equal false.',
-      expect(failingTest.file).toEqual 'spec/fixtures/fail_spec.js',
-      expect(failingTest.line).toEqual '6'
-      expect(failingTest.stacktrace).toEqual [
+      expect(result.wasSuccessful()).toBeTruthy()
+
+  it 'there were failures in the tests', ->
+    result = undefined
+    callback = (r) ->
+      result = r
+
+    handler = new FakeJasmineHandler('fail.xml')
+    handler.run 'failing-test', callback, noop
+
+    waitsFor ->
+      result isnt undefined
+    runs ->
+      expect(result.wasSuccessful()).toBeFalsy()
+      expect(result.getFailures().length).toEqual 1
+      failure = result.getFailures()[0]
+      expect(failure.namespace).toEqual 'jasmine test suite'
+      expect(failure.name).toEqual 'a failing test',
+      expect(failure.message).toEqual 'Error: Expected true to equal false.',
+      expect(failure.file).toEqual 'spec/fixtures/fail_spec.js',
+      expect(failure.line).toEqual '6'
+      expect(failure.stacktrace).toEqual [
         {caller: 'null.<anonymous>', file: '/Users/someuser/Projects/atom/test-runner/spec/fixtures/fail_spec.js', line: '6'}
       ]

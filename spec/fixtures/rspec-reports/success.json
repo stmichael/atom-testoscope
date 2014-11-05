@@ -1,0 +1,18 @@
+{
+  "examples":[
+    {
+      "description":"exports nested errors",
+      "full_description":"ErrorsPresenter nested errors exports nested errors",
+      "status":"passed",
+      "file_path":"./spec/unit/presenters/errors_presenter_spec.rb",
+      "line_number":32
+    }
+  ],
+  "summary":{
+    "duration":0.001401,
+    "example_count":2,
+    "failure_count":2,
+    "pending_count":0
+  },
+  "summary_line":"2 examples, 2 failures"
+}

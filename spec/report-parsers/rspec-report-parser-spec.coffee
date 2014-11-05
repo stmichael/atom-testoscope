@@ -61,21 +61,22 @@ describe 'RspecReportParser', ->
 
   it 'converts an junit report into an object', ->
     parser = new RspecReportParser
-    results = parser.parse(report)
+    result = parser.parse(report)
 
-    expect(results.length).toEqual 1
-    result = results[0]
-    expect(result.namespace).toEqual 'ErrorsPresenter nested errors'
-    expect(result.name).toEqual 'exports nested errors',
-    expect(result.message).toEqual "undefined method `injfect' for {:questions=\u003e[#\u003cRSpec::Mocks::Mock:0x3fcf34f0bd7c @name=nil\u003e]}:Hash",
-    expect(result.file).toEqual './spec/unit/presenters/errors_presenter_spec.rb',
-    expect(result.line).toEqual '32'
-    expect(result.stacktrace).toEqual [
+    expect(result.wasSuccessful()).toBeFalsy()
+    expect(result.getFailures().length).toEqual 1
+    failure = result.getFailures()[0]
+    expect(failure.namespace).toEqual 'ErrorsPresenter nested errors'
+    expect(failure.name).toEqual 'exports nested errors',
+    expect(failure.message).toEqual "undefined method `injfect' for {:questions=\u003e[#\u003cRSpec::Mocks::Mock:0x3fcf34f0bd7c @name=nil\u003e]}:Hash",
+    expect(failure.file).toEqual './spec/unit/presenters/errors_presenter_spec.rb',
+    expect(failure.line).toEqual '32'
+    expect(failure.stacktrace).toEqual [
       {file: "/Users/someuser/Projects/atom/test-runner/app/presenters/errors_presenter.rb", line: "15", caller: "fields_as_json"}
       {file: "/Users/someuser/Projects/atom/test-runner/app/presenters/errors_presenter.rb", line: "10", caller: "as_json"}
       {file: "/Users/someuser/Projects/atom/test-runner/spec/unit/presenters/errors_presenter_spec.rb", line: "33", caller: "block (3 levels) in \u003ctop (required)\u003e"}
     ]
-    expect(result.fullStacktrace).toEqual [
+    expect(failure.fullStacktrace).toEqual [
       {file: "/Users/someuser/Projects/atom/test-runner/app/presenters/errors_presenter.rb", line: "15", caller: "fields_as_json"}
       {file: "/Users/someuser/Projects/atom/test-runner/app/presenters/errors_presenter.rb", line: "10", caller: "as_json"}
       {file: "/Users/someuser/Projects/atom/test-runner/spec/unit/presenters/errors_presenter_spec.rb", line: "33", caller: "block (3 levels) in \u003ctop (required)\u003e"}

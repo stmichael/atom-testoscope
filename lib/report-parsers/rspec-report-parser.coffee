@@ -1,15 +1,17 @@
 Stacktrace = require './stacktrace'
+TestSuiteResult = require './test-suite-result'
 
 module.exports =
 class RspecReportParser
 
   parse: (data) ->
+    result = new TestSuiteResult
+    console.log data
     reportObject = JSON.parse(data)
-    result = []
     for example in reportObject.examples
       if example.status == 'failed'
         stacktrace = new Stacktrace(@_parseStacktrace(example.exception.backtrace))
-        result.push
+        result.addFailure
           namespace: example.full_description.replace(new RegExp(" #{example.description}"), '')
           name: example.description
           message: example.exception.message

@@ -18,7 +18,8 @@ class RspecHandler extends BaseHandler
       "rspec --format json --out #{path.join(reportPath, 'rspec.json')} #{testFilePath}"
 
   parseErrors: (callback) ->
-    file = path.join(@getReportPath(), 'rspec.json')
-    fs.readFile file, encoding: 'UTF-8', (err, data) =>
-      errors = new RspecReportParser().parse(data)
-      callback(errors)
+    fs.readdir @getReportPath(), (err, files) =>
+      file = path.join(@getReportPath(), files[0])
+      fs.readFile file, encoding: 'UTF-8', (err, data) =>
+        result = new RspecReportParser().parse(data)
+        callback(result)

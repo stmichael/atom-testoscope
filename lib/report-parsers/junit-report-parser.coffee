@@ -2,23 +2,28 @@ xpath = require('xpath')
 {DOMParser} = require('xmldom')
 Entities = require('html-entities').AllHtmlEntities;
 Stacktrace = require './stacktrace'
+TestSuiteResult = require './test-suite-result'
 
 module.exports =
 class JunitReportParser
   parse: (data) ->
+    result = new TestSuiteResult
     doc = new DOMParser().parseFromString(data)
     failures = xpath.select('(//failure)', doc)
     for failure in failures
       stacktraceTexts = @_buildArrayedStacktrace(xpath.select('./text()', failure)[0].nodeValue)
       stacktrace = new Stacktrace(@_parseStacktrace(stacktraceTexts))
 
-      namespace: failure.parentNode.getAttribute('classname')
-      name: failure.parentNode.getAttribute('name')
-      message: @_extractFailureMessage(xpath.select('./text()', failure)[0].nodeValue)
-      file: atom.project.relativize(stacktrace.getTestCaller().file)
-      line: stacktrace.getTestCaller().line
-      fullStacktrace: stacktrace.getFullTrace()
-      stacktrace: stacktrace.getRelevantTrace()
+      result.addFailure
+        namespace: failure.parentNode.getAttribute('classname')
+        name: failure.parentNode.getAttribute('name')
+        message: @_extractFailureMessage(xpath.select('./text()', failure)[0].nodeValue)
+        file: atom.project.relativize(stacktrace.getTestCaller().file)
+        line: stacktrace.getTestCaller().line
+        fullStacktrace: stacktrace.getFullTrace()
+        stacktrace: stacktrace.getRelevantTrace()
+
+    result
 
   _buildArrayedStacktrace: (stacktrace) ->
     entities = new Entities

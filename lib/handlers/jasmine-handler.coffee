@@ -13,5 +13,5 @@ class JasmineHandler extends BaseHandler
     fs.readdir @getReportPath(), (err, files) =>
       file = path.join(@getReportPath(), files[0])
       fs.readFile file, encoding: 'UTF-8', (err, data) =>
-        errors = new JunitReportParser().parse(data)
-        callback(errors)
+        result = new JunitReportParser().parse(data)
+        callback(result)
