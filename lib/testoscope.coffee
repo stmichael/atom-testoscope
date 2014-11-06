@@ -39,9 +39,9 @@ module.exports =
 
       atom.workspaceView.statusBar.appendLeft(@resultStatusView)
 
-      atom.workspaceView.command 'test-runner:run-all', =>
+      atom.workspaceView.command 'testoscope:run-all', =>
         @testSuite.run(atom.workspace.getActiveTextEditor().getPath())
-      atom.workspaceView.command 'test-runner:toggle-last-stack-trace', =>
+      atom.workspaceView.command 'testoscope:toggle-last-stack-trace', =>
         unless @testSuite.wasSuccessful()
           @stacktraceSelectView.show(@testSuite.getLastResult().getFirstFailure().stacktrace)
       atom.workspaceView.command 'core:cancel', =>

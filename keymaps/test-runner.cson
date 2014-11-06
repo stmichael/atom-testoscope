@@ -9,5 +9,5 @@
 # https://atom.io/docs/latest/advanced/keymaps
 
 '.editor':
-  'cmd-m': 'test-runner:run-all'
-  'cmd-shift-m': 'test-runner:toggle-last-stack-trace'
+  'cmd-m': 'testoscope:run-all'
+  'cmd-shift-m': 'testoscope:toggle-last-stack-trace'

@@ -31,7 +31,7 @@ describe 'TestSuite', ->
     waitsForPromise ->
       atom.packages.activatePackage('status-bar')
     waitsForPromise ->
-      atom.packages.activatePackage('test-runner')
+      atom.packages.activatePackage('testoscope')
 
   it 'emits an event before executing the tests', ->
     called = false

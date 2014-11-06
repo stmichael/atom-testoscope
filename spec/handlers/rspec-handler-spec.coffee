@@ -16,7 +16,7 @@ describe 'RspecHandler', ->
       "cp #{path.join(path.dirname(module.filename), '..', 'fixtures', 'rspec-reports', @reportFile)} #{@getReportPath()}"
 
   beforeEach ->
-    atom.project.setPaths(['/Users/someuser/Projects/atom/test-runner/dummy'])
+    atom.project.setPaths(['/Users/someuser/Projects/atom/testoscope/dummy'])
 
   describe 'configuration', ->
     it 'executes rspec', ->
@@ -64,7 +64,7 @@ describe 'RspecHandler', ->
         expect(failure.file).toEqual './spec/unit/presenters/errors_presenter_spec.rb',
         expect(failure.line).toEqual '32'
         expect(failure.stacktrace).toEqual [
-          {file: "/Users/someuser/Projects/atom/test-runner/app/presenters/errors_presenter.rb", line: "15", caller: "fields_as_json"}
-          {file: "/Users/someuser/Projects/atom/test-runner/app/presenters/errors_presenter.rb", line: "10", caller: "as_json"}
-          {file: "/Users/someuser/Projects/atom/test-runner/spec/unit/presenters/errors_presenter_spec.rb", line: "33", caller: "block (3 levels) in \u003ctop (required)\u003e"}
+          {file: "/Users/someuser/Projects/atom/testoscope/app/presenters/errors_presenter.rb", line: "15", caller: "fields_as_json"}
+          {file: "/Users/someuser/Projects/atom/testoscope/app/presenters/errors_presenter.rb", line: "10", caller: "as_json"}
+          {file: "/Users/someuser/Projects/atom/testoscope/spec/unit/presenters/errors_presenter_spec.rb", line: "33", caller: "block (3 levels) in \u003ctop (required)\u003e"}
         ]

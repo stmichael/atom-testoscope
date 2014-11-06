@@ -1,4 +1,4 @@
-# test-runner package
+# testoscope package
 
 A short description of your package.
 

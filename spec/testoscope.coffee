@@ -2,7 +2,7 @@
 ChildProcess = require 'child_process'
 path = require 'path'
 
-testRunner = require '../lib/test-runner'
+testRunner = require '../lib/testoscope'
 JasmineHandler = require '../lib/handlers/jasmine-handler'
 
 class TestJasmineHandler extends JasmineHandler
@@ -48,10 +48,10 @@ describe "TestRunner", ->
     waitsForPromise ->
       atom.packages.activatePackage('status-bar')
     waitsForPromise ->
-      atom.packages.activatePackage('test-runner')
+      atom.packages.activatePackage('testoscope')
 
   it 'exposes a handler registry', ->
-    thisPackage = require '../lib/test-runner'
+    thisPackage = require '../lib/testoscope'
     TestHandlerRegistry = require '../lib/test-handler-registry'
 
     expect(thisPackage.handlerRegistry instanceof TestHandlerRegistry).toBeTruthy()
@@ -60,7 +60,7 @@ describe "TestRunner", ->
     it 'shows that the tests are running', ->
       waitToOpen('success_spec.js')
       runs ->
-        trigger 'test-runner:run-all'
+        trigger 'testoscope:run-all'
 
         expectStatusBarToShowRunningIcon()
         expectStatusBarToShow('running')
@@ -68,7 +68,7 @@ describe "TestRunner", ->
 
     it 'shows a success message', ->
       waitToOpen('success_spec.js')
-      runTrigger 'test-runner:run-all'
+      runTrigger 'testoscope:run-all'
       waitForTestToBeFinished()
       runs ->
         expectStatusBarToShowSuccessIcon()
@@ -76,7 +76,7 @@ describe "TestRunner", ->
 
     it 'shows a failure message', ->
       waitToOpen('fail_spec.js')
-      runTrigger 'test-runner:run-all'
+      runTrigger 'testoscope:run-all'
       waitForTestToBeFinished()
 
       runs ->
@@ -85,7 +85,7 @@ describe "TestRunner", ->
 
     it 'shows a message when a test file cannot be executed', ->
       waitToOpen('example.b')
-      runTrigger 'test-runner:run-all'
+      runTrigger 'testoscope:run-all'
       waitForTestToBeFinished()
 
       runs ->
@@ -111,18 +111,18 @@ describe "TestRunner", ->
     describe 'with a failed test', ->
       beforeEach ->
         waitToOpen('fail_spec.js')
-        runTrigger 'test-runner:run-all'
+        runTrigger 'testoscope:run-all'
         waitForTestToBeFinished()
 
       it 'shows the stack trace of the last failed test', ->
-        trigger 'test-runner:toggle-last-stack-trace'
+        trigger 'testoscope:toggle-last-stack-trace'
 
         runs ->
           expectStacktraceSelectionToShow('fail_spec.js:4 at null.<anonymous>')
 
       it 'opens the file selected from the stack trace', ->
         waitToOpen('example.b')
-        runTrigger 'test-runner:toggle-last-stack-trace'
+        runTrigger 'testoscope:toggle-last-stack-trace'
         waitForStacktraceSelectionToShow()
         runs ->
           atom.workspaceView.find('.stacktrace-selection').view().trigger 'core:confirm'
@@ -137,7 +137,7 @@ describe "TestRunner", ->
         ]
 
       it 'stacktrace disappears before a new test is run', ->
-        runTrigger 'test-runner:run-all'
+        runTrigger 'testoscope:run-all'
 
         runs ->
           expect(atom.workspaceView.find('.stacktrace').length).toEqual 0
@@ -152,7 +152,7 @@ describe "TestRunner", ->
     describe 'no test has been run', ->
       it 'doesnt show the stacktrace', ->
         waitToOpen('example.b')
-        runTrigger 'test-runner:toggle-last-stack-trace'
+        runTrigger 'testoscope:toggle-last-stack-trace'
 
         runs ->
           expect(atom.workspaceView.find('.stacktrace-view li').length).toEqual 0
@@ -160,11 +160,11 @@ describe "TestRunner", ->
     describe 'with a passing test', ->
       beforeEach ->
         waitToOpen('success_spec.js')
-        runTrigger 'test-runner:run-all'
+        runTrigger 'testoscope:run-all'
         waitForTestToBeFinished()
 
       it 'doesnt show test stacktrace', ->
-        trigger 'test-runner:toggle-last-stack-trace'
+        trigger 'testoscope:toggle-last-stack-trace'
 
         runs ->
           expect(atom.workspaceView.find('.stacktrace-view li').length).toEqual 0

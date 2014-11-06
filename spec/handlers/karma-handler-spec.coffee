@@ -17,7 +17,7 @@ describe 'KarmaHandler', ->
       "cp #{path.join(path.dirname(module.filename), '..', 'fixtures', 'junit-reports', @reportFile)} #{path.join(@getReportPath(), 'test-results.xml')}"
 
   beforeEach ->
-    atom.project.setPaths(['/Users/someuser/Projects/atom/test-runner/dummy'])
+    atom.project.setPaths(['/Users/someuser/Projects/atom/testoscope/dummy'])
 
   describe 'configuration', ->
     it 'run karma with a configuration file', ->
@@ -59,5 +59,5 @@ describe 'KarmaHandler', ->
         expect(failure.file).toEqual 'spec/fixtures/fail_spec.js',
         expect(failure.line).toEqual '6'
         expect(failure.stacktrace).toEqual [
-          {caller: 'null.<anonymous>', file: '/Users/someuser/Projects/atom/test-runner/spec/fixtures/fail_spec.js', line: '6'}
+          {caller: 'null.<anonymous>', file: '/Users/someuser/Projects/atom/testoscope/spec/fixtures/fail_spec.js', line: '6'}
         ]

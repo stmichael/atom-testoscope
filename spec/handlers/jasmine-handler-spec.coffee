@@ -15,7 +15,7 @@ describe 'JasmineHandler', ->
       "cp #{path.join(path.dirname(module.filename), '..', 'fixtures', 'junit-reports', @reportFile)} #{@getReportPath()}"
 
   beforeEach ->
-    atom.project.setPaths(['/Users/someuser/Projects/atom/test-runner/dummy'])
+    atom.project.setPaths(['/Users/someuser/Projects/atom/testoscope/dummy'])
 
   it 'the tests were successful', ->
     result = undefined
@@ -50,5 +50,5 @@ describe 'JasmineHandler', ->
       expect(failure.file).toEqual 'spec/fixtures/fail_spec.js',
       expect(failure.line).toEqual '6'
       expect(failure.stacktrace).toEqual [
-        {caller: 'null.<anonymous>', file: '/Users/someuser/Projects/atom/test-runner/spec/fixtures/fail_spec.js', line: '6'}
+        {caller: 'null.<anonymous>', file: '/Users/someuser/Projects/atom/testoscope/spec/fixtures/fail_spec.js', line: '6'}
       ]

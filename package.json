@@ -1,10 +1,10 @@
 {
-  "name": "test-runner",
-  "main": "./lib/test-runner",
+  "name": "testoscope",
+  "main": "./lib/testoscope",
   "version": "0.0.0",
   "description": "A short description of your package",
   "activationEvents": [],
-  "repository": "https://github.com/atom/test-runner",
+  "repository": "https://github.com/atom/testoscope",
   "license": "MIT",
   "engines": {
     "atom": ">0.50.0"

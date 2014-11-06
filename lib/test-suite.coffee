@@ -16,7 +16,7 @@ class TestSuite
 
   _getConfigPaths: ->
     [
-      path.join(atom.packages.getActivePackage('test-runner').path, 'lib', 'test-handler.cson'),
+      path.join(atom.packages.getActivePackage('testoscope').path, 'lib', 'test-handler.cson'),
       path.join(atom.project.getPaths()[0], '.test-handler.cson')
     ]
 
