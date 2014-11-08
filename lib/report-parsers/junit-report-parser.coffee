@@ -18,6 +18,7 @@ class JunitReportParser
       else
         failure = xpath.select('./failure', testcase)[0]
         stacktraceTexts = @_buildArrayedStacktrace(xpath.select('./text()', failure)[0].nodeValue)
+        console.log @_parseStacktrace(stacktraceTexts)
         stacktrace = new Stacktrace(@_parseStacktrace(stacktraceTexts))
 
         result.addFailure
@@ -39,11 +40,15 @@ class JunitReportParser
       line.length > 0 && line.match(/(\/[^\/]+)+/)
 
   _parseStacktrace: (stacktraceText) ->
+    result = []
     for line in stacktraceText
       matchData = line.match(/at (.*) \(((\/[^\/:]+)+):(\d+)/)
-      caller: matchData[1]
-      file: matchData[2]
-      line: matchData[4]
+      if matchData
+        result.push
+          caller: matchData[1]
+          file: matchData[2]
+          line: matchData[4]
+    result
 
   _extractFailureMessages: (stacktrace) ->
     entities = new Entities

@@ -4,19 +4,29 @@
 // for a full listing of what's available.
 @import "ui-variables";
 
-.test-result-status {
-  .status-running {
-    color: @text-color-info;
-  }
-  .status-successful {
-    color: @text-color-success;
-  }
-  .status-failure {
-    color: @text-color-error;
-  }
+.status-running {
+  color: @text-color-info;
+}
+.status-successful {
+  color: @text-color-success;
+}
+.status-failure {
+  color: @text-color-error;
 }
 
-.stacktrace {
+.split-panel {
+  display: flex;
+}
+
+.panel-segment {
+  flex: 1;
+}
+
+.output-panel {
+  max-height: 300px;
+  .panel-segment {
+    overflow-y: scroll;
+  }
   .failure {
     color: @text-color-error;
   }

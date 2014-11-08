@@ -13,18 +13,26 @@ class RspecHandler extends BaseHandler
 
   _getCommand: (testFilePath, reportPath) ->
     if @useBundler
-      "bundle exec rspec --format json --out #{path.join(reportPath, 'rspec.json')} #{testFilePath}"
+      "bundle"
     else
-      "rspec --format json --out #{path.join(reportPath, 'rspec.json')} #{testFilePath}"
+      "rspec"
 
-  parseErrors: (successCallback, errorCallback, error, stdout, stderr) ->
-    file = path.join(@getReportPath(), 'rspec.json')
-    if fs.existsSync(file)
-      fs.readFile file, encoding: 'UTF-8', (err, data) =>
-        if data.match(/^\s*$/)
-          errorCallback(stdout)
-        else
-          result = new RspecReportParser().parse(data)
-          successCallback(result)
+  _getCommandArgs: (testFilePath, reportPath) ->
+    if @useBundler
+      ['exec', 'rspec', '--format', 'progress', '--format', 'json', '--out', path.join(reportPath, 'rspec.json'), testFilePath]
     else
-      errorCallback(stderr)
+      ['--format', 'progress', '--format', 'json', '--out', path.join(reportPath, 'rspec.json'), testFilePath]
+
+  parseErrors: (defer) ->
+    fs.readdir @getReportPath(), (err, files) =>
+      console.log files
+      if files.length > 0
+        file = path.join(@getReportPath(), 'rspec.json')
+        fs.readFile file, encoding: 'UTF-8', (err, data) =>
+          if data.match(/^\s*$/)
+            defer.reject()
+          else
+            result = new RspecReportParser().parse(data)
+            defer.resolve result
+      else
+        defer.reject()

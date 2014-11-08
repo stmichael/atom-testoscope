@@ -1,6 +1,7 @@
 TestSuite = require '../lib/test-suite'
 TestHandlerRegistry = require '../lib/test-handler-registry'
 TestHandlerFactory = require '../lib/test-handler-factory'
+Q = require 'q'
 
 describe 'TestSuite', ->
 
@@ -18,14 +19,23 @@ describe 'TestSuite', ->
         line: '9'
       ]
   successHandler = ->
-  successHandler.prototype.run = (file, successCallback, failureCallback) ->
-    successCallback(successfulResult)
+  successHandler.prototype.run = (file) ->
+    defer = Q.defer()
+    defer.promise
   failureHandler = ->
-  failureHandler.prototype.run = (file, successCallback, failureCallback) ->
-    successCallback(failureResult)
+  failureHandler.prototype.run = (file) ->
+    defer = Q.defer()
+    defer.promise
+
+  executionDefer = undefined
+  handler = ->
+  handler.prototype.run = ->
+    executionDefer = Q.defer()
+    executionDefer.promise
 
   beforeEach ->
     handlerRegistry = new TestHandlerRegistry
+    handlerRegistry.add 'jasmine', handler
     handlerFactory = new TestHandlerFactory(handlerRegistry)
     testSuite = new TestSuite(handlerFactory)
     waitsForPromise ->
@@ -43,17 +53,34 @@ describe 'TestSuite', ->
     expect(called).toBeTruthy()
 
   it 'emits an event when the tests passed', ->
-    handlerRegistry.add 'jasmine', successHandler
     event = undefined
     testSuite.onWasSuccessful (e) ->
       event = e
 
     testSuite.run 'example_spec.js'
+    executionDefer.resolve(successfulResult)
 
-    expect(event.file).toEqual 'example_spec.js'
+    waitsFor ->
+      event isnt undefined
+    runs ->
+      expect(event.file).toEqual 'example_spec.js'
+      expect(testSuite.wasSuccessful()).toBeTruthy()
+
+  it 'emits an event when the command put something on stdout', ->
+    output = ''
+    testSuite.onOutput (data) ->
+      output = output + data
+
+    testSuite.run 'example_spec.js'
+    executionDefer.notify 'command'
+    executionDefer.notify 'successful'
+
+    waitsFor ->
+      output isnt ''
+    runs ->
+      expect(output).toEqual 'commandsuccessful'
 
   it 'emits an event when no appropriate handler has been found', ->
-    handlerRegistry.add 'jasmine', successHandler
     event = undefined
     testSuite.onWasErroneous (e) ->
       event = e
@@ -63,25 +90,38 @@ describe 'TestSuite', ->
     expect(event.message).toEqual "Don't know how to run some_file.rb"
 
   it 'emits an event when the tests failed', ->
-    handlerRegistry.add 'jasmine', failureHandler
     called = false
     testSuite.onWasFaulty ->
       called = true
 
     testSuite.run 'example_spec.js'
+    executionDefer.resolve(failureResult)
 
-    expect(called).toBeTruthy()
+    waitsFor ->
+      called
+    runs ->
+      expect(testSuite.wasSuccessful()).toBeFalsy()
 
   it 'runs the last test again when no handler has been found', ->
-    handlerRegistry.add 'jasmine', successHandler
+    firstCall = false
+    testSuite.onWasSuccessful ->
+      firstCall = true
     testSuite.run 'example_spec.js'
+    executionDefer.resolve(successfulResult)
+    waitsFor ->
+      firstCall
 
-    event = undefined
-    testSuite.onWasSuccessful (e) ->
-      event = e
-    testSuite.run 'example_spec.rb'
+    secondCall = false
+    runs ->
+      testSuite.onWasFaulty ->
+        secondCall = true
+      testSuite.run 'example_spec.rb'
+      executionDefer.resolve(failureResult)
 
-    expect(event.file).toEqual 'example_spec.js'
+    waitsFor ->
+      secondCall
+    runs ->
+      expect(testSuite.wasSuccessful()).toBeFalsy()
 
   describe 'failure check', ->
 
@@ -89,13 +129,25 @@ describe 'TestSuite', ->
       expect(testSuite.wasSuccessful()).toBeTruthy()
 
     it 'is false when the tests have been successful', ->
-      handlerRegistry.add 'jasmine', successHandler
+      called = false
+      testSuite.onWasSuccessful ->
+        called = true
       testSuite.run 'example_spec.js'
+      executionDefer.resolve(successfulResult)
 
-      expect(testSuite.wasSuccessful()).toBeTruthy()
+      waitsFor ->
+        called
+      runs ->
+        expect(testSuite.wasSuccessful()).toBeTruthy()
 
     it 'is true when the tests failed', ->
-      handlerRegistry.add 'jasmine', failureHandler
+      called = false
+      testSuite.onWasFaulty ->
+        called = true
       testSuite.run 'example_spec.js'
+      executionDefer.resolve(failureResult)
 
-      expect(testSuite.wasSuccessful()).toBeFalsy()
+      waitsFor ->
+        called
+      runs ->
+        expect(testSuite.wasSuccessful()).toBeFalsy()

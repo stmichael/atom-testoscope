@@ -1,6 +1,6 @@
 ResultStatusView = require './result-status-view'
 StacktraceSelectView = require './stacktrace-select-view'
-StacktraceView = require './stacktrace-view'
+TestResultPanel = require './test-result-panel'
 
 TestSuite = require './test-suite'
 TestHandlerRegistry = require './test-handler-registry'
@@ -23,20 +23,23 @@ module.exports =
       @testSuite = new TestSuite(handlerFactory)
       @resultStatusView = new ResultStatusView
       @stacktraceSelectView = new StacktraceSelectView
-      @stacktraceView = new StacktraceView
+      @testResultPanel = new TestResultPanel
 
       @testSuite.onDidStart =>
         @resultStatusView.setRunning()
-        @stacktraceView.detach()
+        @testResultPanel.clear()
+        @testResultPanel.attach()
       @testSuite.onWasSuccessful (event) =>
         @resultStatusView.setSuccessful(atom.project.relativize(event.file))
+        @testResultPanel.detach()
       @testSuite.onWasFaulty =>
         result = @testSuite.getLastResult()
         @resultStatusView.setFaulty("#{result.getFirstFailure().file}:#{result.getFirstFailure().line}")
-        @stacktraceView.show(result.getFirstFailure())
+        @testResultPanel.showFailure(result.getFirstFailure())
       @testSuite.onWasErroneous (event) =>
         @resultStatusView.setFaulty event.message
-        @stacktraceView.showOutput(event.output)
+      @testSuite.onOutput (output) ->
+        @testResultPanel.addOutput(output)
 
       atom.workspaceView.statusBar.appendLeft(@resultStatusView)
 
@@ -46,7 +49,7 @@ module.exports =
         unless @testSuite.wasSuccessful()
           @stacktraceSelectView.show(@testSuite.getLastResult().getFirstFailure().stacktrace)
       atom.workspaceView.command 'core:cancel', =>
-        @stacktraceView.detach()
+        @testResultPanel.detach()
 
     if atom.workspaceView.statusBar
       createStatusEntry()
