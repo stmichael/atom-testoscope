@@ -5,8 +5,8 @@ describe 'RspecReportParser', ->
   report = '''{
     "examples":[
       {
-        "description":"exports nested errors",
-        "full_description":"ErrorsPresenter nested errors exports nested errors",
+        "description":"success",
+        "full_description":"ErrorsPresenter nested errors success",
         "status":"passed",
         "file_path":"./spec/unit/presenters/errors_presenter_spec.rb",
         "line_number":32
@@ -64,8 +64,15 @@ describe 'RspecReportParser', ->
     result = parser.parse(report)
 
     expect(result.wasSuccessful()).toBeFalsy()
-    expect(result.getFailures().length).toEqual 1
-    failure = result.getFailures()[0]
+    expect(result.getTestcases().length).toEqual 2
+
+    success = result.getTestcases()[0]
+    expect(success.status).toEqual 'passed'
+    expect(success.namespace).toEqual 'ErrorsPresenter nested errors'
+    expect(success.name).toEqual 'success'
+
+    failure = result.getTestcases()[1]
+    expect(failure.status).toEqual 'failed'
     expect(failure.namespace).toEqual 'ErrorsPresenter nested errors'
     expect(failure.name).toEqual 'exports nested errors',
     expect(failure.messages).toEqual ["undefined method `injfect'", "for {:questions=\u003e[#\u003cRSpec::Mocks::Mock:0x3fcf34f0bd7c @name=nil\u003e]}:Hash"],

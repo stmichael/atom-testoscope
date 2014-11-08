@@ -21,7 +21,7 @@ class BaseHandler
 
   executeTestCommand: (testFilePath, successCallback, errorCallback) ->
     ChildProcess.exec @_getBashCommand(testFilePath), (error, stdout, stderr) =>
-      @parseErrors(successCallback)
+      @parseErrors(successCallback, errorCallback, error, stdout, stderr)
 
   _getBashCommand: (testFilePath) ->
     projectPath = atom.project.getPaths()[0]

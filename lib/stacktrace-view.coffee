@@ -18,3 +18,10 @@ class StacktraceView extends View
         @div "#{relativeFile}:#{item.line} at #{item.caller}", class: 'block failure stacktrace-line'
 
     atom.workspace.addBottomPanel(item: this);
+
+  showOutput: (output) ->
+    @empty()
+    @append $$ ->
+      @div output
+
+    atom.workspace.addBottomPanel(item: this);

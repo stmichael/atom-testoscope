@@ -5,7 +5,9 @@ describe 'JunitReportParser', ->
   report = '''
 <?xml version="1.0" encoding="UTF-8" ?>
 <testsuites>
-  <testsuite name="jasmine test suite" errors="0" tests="1" failures="1" time="0.007" timestamp="2014-10-22T15:13:53">
+  <testsuite name="jasmine test suite" errors="0" tests="2" failures="1" time="0.007" timestamp="2014-10-22T15:13:53">
+    <testcase classname="jasmine test suite" name="a running test" time="0.003">
+    </testcase>
     <testcase classname="jasmine test suite" name="a failing test" time="0.003">
       <failure type="expect" message="Expected true to equal false.">
         Error: Expected true to equal false.
@@ -35,8 +37,15 @@ describe 'JunitReportParser', ->
     result = parser.parse(report)
 
     expect(result.wasSuccessful()).toBeFalsy()
-    expect(result.getFailures().length).toEqual 1
-    failure = result.getFailures()[0]
+    expect(result.getTestcases().length).toEqual 2
+
+    success = result.getTestcases()[0]
+    expect(success.status).toEqual 'passed'
+    expect(success.namespace).toEqual 'jasmine test suite'
+    expect(success.name).toEqual 'a running test'
+
+    failure = result.getTestcases()[1]
+    expect(failure.status).toEqual 'failed'
     expect(failure.namespace).toEqual 'jasmine test suite'
     expect(failure.name).toEqual 'a failing test',
     expect(failure.messages).toEqual ['Error: Expected true to equal false.'],

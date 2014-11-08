@@ -36,6 +36,7 @@ module.exports =
         @stacktraceView.show(result.getFirstFailure())
       @testSuite.onWasErroneous (event) =>
         @resultStatusView.setFaulty event.message
+        @stacktraceView.showOutput(event.output)
 
       atom.workspaceView.statusBar.appendLeft(@resultStatusView)
 

@@ -2,16 +2,29 @@ module.exports =
 class TestSuiteResult
 
   constructor: ->
-    @failures = []
+    @testcases = []
 
-  addFailure: (failure) ->
-    @failures.push failure
-
-  getFailures: ->
-    @failures
+  getTestcases: ->
+    @testcases
 
   getFirstFailure: ->
-    @failures[0]
+    for testcase in @testcases
+      if testcase.status == 'failed'
+        return testcase
+
+  addFailure: (failure) ->
+    failure.status = 'failed'
+    @testcases.push failure
+
+  addSuccess: (success) ->
+    success.status = 'passed'
+    @testcases.push success
 
   wasSuccessful: ->
-    @failures.length == 0
+    for testcase in @testcases
+      if testcase.status == 'failed'
+        return false
+    true
+
+  getNumberOfTestcases: ->
+    @testcases.length

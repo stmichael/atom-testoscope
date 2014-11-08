@@ -26,7 +26,7 @@ class TestSuite
     handler = @handlerFactory.findByPath(file)
     if handler
       @lastFile = file
-      handler.run(file, @_testSuccessCallback, @_testFailureCallback)
+      handler.run(file, @_testSuccessCallback, @_testErrorCallback)
     else if @lastFile
       @_runFile(@lastFile)
     else
@@ -39,9 +39,8 @@ class TestSuite
     else
       @emitter.emit 'was-faulty'
 
-  _testFailureCallback: (failures) =>
-    @lastFailures = failures
-    @emitter.emit 'was-faulty'
+  _testErrorCallback: (output) =>
+    @emitter.emit 'was-erroneous', output: output
 
   wasSuccessful: ->
     !@lastResult || @lastResult.wasSuccessful()

@@ -12,10 +12,16 @@ class KarmaHandler extends BaseHandler
     @configFile = options.config
 
   _getCommand: (testFilePath) ->
-    "node_modules/karma/bin/karma start #{@configFile} --single-run --reporters junit; mv #{atom.project.getPaths()[0]}/test-results.xml #{@getReportPath()}"
+    "node_modules/karma/bin/karma start #{@configFile} --single-run --reporters junit,dots; mv #{atom.project.getPaths()[0]}/test-results.xml #{@getReportPath()}"
 
-  parseErrors: (callback) ->
+  parseErrors: (successCallback, errorCallback, error, stdout, stderr) ->
     file = path.join(@getReportPath(), 'test-results.xml')
-    fs.readFile file, encoding: 'UTF-8', (err, data) =>
-      errors = new JunitReportParser().parse(data)
-      callback(errors)
+    if fs.existsSync(file)
+      fs.readFile file, encoding: 'UTF-8', (err, data) =>
+        result = new JunitReportParser().parse(data)
+        if result.getNumberOfTestcases() > 0
+          successCallback(result)
+        else
+          errorCallback(stdout)
+    else
+      errorCallback(stderr)

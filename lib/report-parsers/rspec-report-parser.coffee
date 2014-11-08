@@ -18,6 +18,10 @@ class RspecReportParser
           line: example.line_number.toString()
           fullStacktrace: stacktrace.getFullTrace()
           stacktrace: stacktrace.getRelevantTrace()
+      else
+        result.addSuccess
+          namespace: example.full_description.replace(new RegExp(" #{example.description}"), '')
+          name: example.description
 
     result
 

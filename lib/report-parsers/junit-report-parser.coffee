@@ -9,19 +9,25 @@ class JunitReportParser
   parse: (data) ->
     result = new TestSuiteResult
     doc = new DOMParser().parseFromString(data)
-    failures = xpath.select('(//failure)', doc)
-    for failure in failures
-      stacktraceTexts = @_buildArrayedStacktrace(xpath.select('./text()', failure)[0].nodeValue)
-      stacktrace = new Stacktrace(@_parseStacktrace(stacktraceTexts))
+    testcases = xpath.select('(//testcase)', doc)
+    for testcase in testcases
+      if xpath.select('./failure', testcase).length == 0
+        result.addSuccess
+          namespace: testcase.getAttribute('classname')
+          name: testcase.getAttribute('name')
+      else
+        failure = xpath.select('./failure', testcase)[0]
+        stacktraceTexts = @_buildArrayedStacktrace(xpath.select('./text()', failure)[0].nodeValue)
+        stacktrace = new Stacktrace(@_parseStacktrace(stacktraceTexts))
 
-      result.addFailure
-        namespace: failure.parentNode.getAttribute('classname')
-        name: failure.parentNode.getAttribute('name')
-        messages: @_extractFailureMessages(xpath.select('./text()', failure)[0].nodeValue)
-        file: atom.project.relativize(stacktrace.getTestCaller().file)
-        line: stacktrace.getTestCaller().line
-        fullStacktrace: stacktrace.getFullTrace()
-        stacktrace: stacktrace.getRelevantTrace()
+        result.addFailure
+          namespace: testcase.getAttribute('classname')
+          name: testcase.getAttribute('name')
+          messages: @_extractFailureMessages(xpath.select('./text()', failure)[0].nodeValue)
+          file: atom.project.relativize(stacktrace.getTestCaller().file)
+          line: stacktrace.getTestCaller().line
+          fullStacktrace: stacktrace.getFullTrace()
+          stacktrace: stacktrace.getRelevantTrace()
 
     result
 

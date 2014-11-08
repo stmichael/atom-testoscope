@@ -1,4 +1,4 @@
-describe('jasmine test suite', function() {
+desjiocribe('jasmine test suite', function() {
 
   it('a failing test', function() {
     expect(true).toEqual(false);
