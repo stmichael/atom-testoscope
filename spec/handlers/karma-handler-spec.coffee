@@ -1,5 +1,6 @@
 path = require 'path'
 fs = require 'fs'
+{spawn} = require 'child_process'
 
 KarmaHandler = require '../../lib/handlers/karma-handler'
 
@@ -13,8 +14,9 @@ describe 'KarmaHandler', ->
     constructor: (@reportFile, @status, options) ->
       super(options)
 
-    _getBashCommand: (testFilePath) ->
-      "cp #{path.join(path.dirname(module.filename), '..', 'fixtures', 'junit-reports', @reportFile)} #{path.join(@getReportPath(), 'test-results.xml')}; echo 'done'; exit #{@status}"
+    _spawnCommand: (defer) ->
+      sourceReport = path.join(path.dirname(module.filename), '..', 'fixtures', 'junit-reports', @reportFile)
+      spawn 'cp', ['-v', sourceReport, @getReportPath()]
 
   beforeEach ->
     atom.project.setPaths(['/Users/someuser/Projects/atom/testoscope/dummy'])
@@ -22,17 +24,19 @@ describe 'KarmaHandler', ->
   describe 'configuration', ->
     it 'run karma with a configuration file', ->
       handler = new FakeKarmaHandler('report.xml', 0, config: 'karma.js')
-      expect(handler._getCommand('test.js', 'some/path'))
-        .toMatch(/^node_modules\/karma\/bin\/karma start karma\.js --single-run --reporters junit,dots; mv .*test-results\.xml .+/)
+      expect(handler._getCommand())
+        .toEqual('node_modules/karma/bin/karma')
+      expect(handler._getCommandArgs('test.js', 'some/path'))
+        .toEqual(['start', 'karma.js', '--single-run', '--reporters', 'junit,dots'])
 
   describe 'successful test run', ->
     it 'returns the results', ->
       result = undefined
-      callback = (r) ->
-        result = r
 
       handler = new FakeKarmaHandler('success.xml', 0)
-      handler.run 'successful-test', callback, noop
+      handler.run('successful-test')
+        .then (r) ->
+          result = r
 
       waitsFor ->
         result isnt undefined
@@ -41,16 +45,20 @@ describe 'KarmaHandler', ->
 
   describe 'tests failed', ->
     it 'returns the results', ->
+      output = ''
       result = undefined
-      callback = (r) ->
-        result = r
 
       handler = new FakeKarmaHandler('fail.xml', 1)
-      handler.run 'failing-test', callback, noop
+      handler.run('failing-test')
+        .then (r) ->
+          result = r
+        .progress (data) ->
+          output = output + data
 
       waitsFor ->
         result isnt undefined
       runs ->
+        expect(output).toMatch(/fail\.xml -> .*fail\.xml/)
         expect(result.wasSuccessful()).toBeFalsy()
         expect(result.getTestcases().length).toEqual 1
         failure = result.getTestcases()[0]
@@ -65,28 +73,34 @@ describe 'KarmaHandler', ->
 
   describe 'test command failed due to syntax errors', ->
     it 'returns the shell output', ->
-      output = undefined
-      callback = (o) ->
-        output = o
+      output = ''
+      rejected = false
 
       handler = new FakeKarmaHandler('empty.xml', 1)
-      handler.run 'error', (->), callback
+      handler.run('error')
+        .progress (data) ->
+          output = output + data
+        .catch ->
+          rejected = true
 
       waitsFor ->
-        output isnt undefined
+        rejected
       runs ->
-        expect(output).toMatch(/^\s*done\s*$/)
+        expect(output).toMatch(/empty\.xml -> .*empty\.xml/)
 
   describe 'has no report file', ->
     it 'returns the shell output', ->
-      output = undefined
-      callback = (o) ->
-        output = o
+      output = ''
+      rejected = false
 
       handler = new FakeKarmaHandler('not_existent.xml', 1)
-      handler.run 'error', (->), callback
+      handler.run('error')
+        .progress (data) ->
+          output = output + data
+        .catch ->
+          rejected = true
 
       waitsFor ->
-        output isnt undefined
+        rejected
       runs ->
         expect(output).toMatch(/not_existent\.xml: No such file or directory/)

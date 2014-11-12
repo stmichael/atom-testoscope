@@ -1,4 +1,5 @@
 path = require 'path'
+{spawn} = require 'child_process'
 
 RspecHandler = require '../../lib/handlers/rspec-handler'
 
@@ -12,8 +13,9 @@ describe 'RspecHandler', ->
     constructor: (@reportFile, @status, options) ->
       super(options)
 
-    _getBashCommand: (testFilePath) ->
-      "cp #{path.join(path.dirname(module.filename), '..', 'fixtures', 'rspec-reports', @reportFile)} #{path.join(@getReportPath(), 'rspec.json')}; echo 'done'; exit #{@status}"
+    _spawnCommand: ->
+      sourceReport = path.join(path.dirname(module.filename), '..', 'fixtures', 'rspec-reports', @reportFile)
+      spawn 'cp', ['-v', sourceReport, path.join(@getReportPath(), 'rspec.json')]
 
   beforeEach ->
     atom.project.setPaths(['/Users/someuser/Projects/atom/testoscope/dummy'])
@@ -21,13 +23,17 @@ describe 'RspecHandler', ->
   describe 'configuration', ->
     it 'executes rspec', ->
       handler = new FakeRspecHandler('report.json', 0, useBundler: false)
-      expect(handler._getCommand('test.rb', 'some/path'))
-        .toEqual('rspec --format json --out some/path/rspec.json test.rb')
+      expect(handler._getCommand())
+        .toEqual('rspec')
+      expect(handler._getCommandArgs('test.rb', 'some/path'))
+        .toEqual(['--format', 'progress', '--format', 'json', '--out', 'some/path/rspec.json', 'test.rb'])
 
     it 'executes rspec with bundler', ->
       handler = new FakeRspecHandler('report.json', 0, useBundler: true)
-      expect(handler._getCommand('test.rb', 'some/path'))
-        .toEqual('bundle exec rspec --format json --out some/path/rspec.json test.rb')
+      expect(handler._getCommand())
+        .toEqual('bundle')
+      expect(handler._getCommandArgs('test.rb', 'some/path'))
+        .toEqual(['exec', 'rspec', '--format', 'progress', '--format', 'json', '--out', 'some/path/rspec.json', 'test.rb'])
 
   describe 'successful test run', ->
     it 'returns the results', ->
@@ -36,7 +42,8 @@ describe 'RspecHandler', ->
         result = r
 
       handler = new FakeRspecHandler('success.json', 0)
-      handler.run 'successful-test', callback, noop
+      handler.run('successful-test')
+        .then(callback)
 
       waitsFor ->
         result isnt undefined
@@ -45,16 +52,21 @@ describe 'RspecHandler', ->
 
   describe 'tests failed', ->
     it 'returns the results', ->
+      output = ''
       result = undefined
       callback = (r) ->
         result = r
 
       handler = new FakeRspecHandler('fail.json', 1)
-      handler.run 'failing-test', callback, noop
+      handler.run('failing-test')
+        .then callback
+        .progress (data) ->
+          output = output + data
 
       waitsFor ->
         result isnt undefined
       runs ->
+        expect(output).toMatch(/\.json -> .*\.json/)
         expect(result.wasSuccessful()).toBeFalsy()
         expect(result.getTestcases().length).toEqual 1
         failure = result.getTestcases()[0]
@@ -71,28 +83,34 @@ describe 'RspecHandler', ->
 
   describe 'test command failed due to syntax errors', ->
     it 'returns the shell output', ->
-      output = undefined
-      callback = (o) ->
-        output = o
+      output = ''
+      rejected = false
 
-      handler = new FakeRspecHandler('empty.json', 1)
-      handler.run 'error', (->), callback
+      handler = new FakeRspecHandler('not_existent.json', 1)
+      handler.run('error')
+        .progress (data) ->
+          output = output + data
+        .catch ->
+          rejected = true
 
       waitsFor ->
-        output isnt undefined
+        rejected && output.length > 0
       runs ->
-        expect(output).toMatch(/^\s*done\s*$/)
+        expect(output).toMatch(/not_existent\.json: No such file or directory/)
 
   describe 'has no report file', ->
     it 'returns the shell output', ->
-      output = undefined
-      callback = (o) ->
-        output = o
+      output = ''
+      rejected = false
 
       handler = new FakeRspecHandler('not_existent.json', 1)
-      handler.run 'error', (->), callback
+      handler.run('error')
+        .progress (data) ->
+          output = output + data
+        .catch ->
+          rejected = true
 
       waitsFor ->
-        output isnt undefined
+        rejected
       runs ->
         expect(output).toMatch(/not_existent\.json: No such file or directory/)

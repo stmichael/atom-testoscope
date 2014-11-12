@@ -2,6 +2,7 @@ ChildProcess = require 'child_process'
 path = require 'path'
 os = require 'os'
 fs = require 'fs.extra'
+Q = require 'q'
 JunitReportParser = require '../report-parsers/junit-report-parser'
 
 module.exports =
@@ -15,14 +16,23 @@ class BaseHandler
       fs.rmrfSync(@getReportPath())
     fs.mkdirSync(@getReportPath())
 
-  run: (testFilePath, successCallback, errorCallback) ->
+  run: (testFilePath, successCallback, errorCallback, outputCallback) ->
     @cleanReportPath()
-    @executeTestCommand(testFilePath, successCallback, errorCallback)
+    @executeTestCommand(testFilePath, successCallback, errorCallback, outputCallback)
 
-  executeTestCommand: (testFilePath, successCallback, errorCallback) ->
-    ChildProcess.exec @_getBashCommand(testFilePath), (error, stdout, stderr) =>
-      @parseErrors(successCallback, errorCallback, error, stdout, stderr)
+  executeTestCommand: (testFilePath, successCallback, errorCallback, outputCallback) ->
+    defer = Q.defer()
+    testCommand = @_spawnCommand(defer, testFilePath)
+    testCommand.stdout.setEncoding('utf8');
+    testCommand.stdout.on 'data', (data) ->
+      defer.notify data
+    testCommand.stderr.setEncoding('utf8');
+    testCommand.stderr.on 'data', (data) ->
+      defer.notify data
+    testCommand.on 'exit', (status) =>
+      @parseErrors(defer)
+    defer.promise
 
-  _getBashCommand: (testFilePath) ->
+  _spawnCommand: (defer, testFilePath) ->
     projectPath = atom.project.getPaths()[0]
-    "bash -l -c 'cd #{projectPath} && #{@_getCommand(testFilePath, @getReportPath())}'"
+    ChildProcess.spawn(@_getCommand(), @_getCommandArgs(testFilePath, @getReportPath()), {cwd: projectPath})

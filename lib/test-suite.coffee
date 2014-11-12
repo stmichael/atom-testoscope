@@ -26,7 +26,10 @@ class TestSuite
     handler = @handlerFactory.findByPath(file)
     if handler
       @lastFile = file
-      handler.run(file, @_testSuccessCallback, @_testErrorCallback)
+      handler.run(file)
+        .then(@_testSuccessCallback)
+        .catch(@_testErrorCallback)
+        .progress(@_outputCallback)
     else if @lastFile
       @_runFile(@lastFile)
     else
@@ -41,6 +44,9 @@ class TestSuite
 
   _testErrorCallback: (output) =>
     @emitter.emit 'was-erroneous', output: output
+
+  _outputCallback: (output) =>
+    @emitter.emit 'output', output
 
   wasSuccessful: ->
     !@lastResult || @lastResult.wasSuccessful()
@@ -59,3 +65,6 @@ class TestSuite
 
   onWasErroneous: (callback) ->
     @emitter.on 'was-erroneous', callback
+
+  onOutput: (callback) ->
+    @emitter.on 'output', callback
