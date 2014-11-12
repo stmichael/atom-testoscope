@@ -25,8 +25,18 @@ class TestResultPanel extends View
     @attach()
 
   addOutput: (text) ->
+    lines = text.split(/\n/)
+    firstLine = lines.shift()
+    lastElement = @find('.shell-output .line:last-child')
+    if lastElement.length == 0
+      @find('.shell-output').append $$ ->
+        @div class: 'line'
+      lastElement = @find('.shell-output .line:last-child')
+    lastElement.text(lastElement.text() + firstLine)
+
     @find('.shell-output').append $$ ->
-      @div class: 'line', text
+      for line in lines
+        @div class: 'line', line
 
   clear: ->
     @find('.last-failure').empty()

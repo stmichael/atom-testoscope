@@ -22,6 +22,18 @@ describe 'test result panel', ->
 
     expect(view.find('.shell-output').text()).toEqual 'Starting Jasmine'
 
+  it 'splits line breaks into multiple elements', ->
+    view.addOutput 'multiple\nlines'
+
+    expect(view.find('.shell-output .line').map(-> $(this).text()).toArray())
+      .toEqual ['multiple', 'lines']
+
+  it 'add consequent output to the same line', ->
+    view.addOutput 'same '
+    view.addOutput 'line'
+
+    expect(view.find('.shell-output .line:first-child').text()).toEqual 'same line'
+
   it 'shows the failure message with the stacktrace', ->
     view.showFailure failure
 
