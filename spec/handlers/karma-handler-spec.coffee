@@ -6,12 +6,8 @@ KarmaHandler = require '../../lib/handlers/karma-handler'
 
 describe 'KarmaHandler', ->
 
-  handler = undefined
-  mockExecData = undefined
-  noop = ->
-
   class FakeKarmaHandler extends KarmaHandler
-    constructor: (@reportFile, @status, options) ->
+    constructor: (@reportFile, options) ->
       super(options)
 
     _spawnCommand: (defer) ->
@@ -23,7 +19,7 @@ describe 'KarmaHandler', ->
 
   describe 'configuration', ->
     it 'run karma with a configuration file', ->
-      handler = new FakeKarmaHandler('report.xml', 0, config: 'karma.js')
+      handler = new FakeKarmaHandler('report.xml', config: 'karma.js')
       expect(handler._getCommand())
         .toEqual('node_modules/karma/bin/karma')
       expect(handler._getCommandArgs('test.js', 'some/path'))
@@ -33,7 +29,7 @@ describe 'KarmaHandler', ->
     it 'returns the results', ->
       result = undefined
 
-      handler = new FakeKarmaHandler('success.xml', 0)
+      handler = new FakeKarmaHandler('success.xml')
       handler.run('successful-test')
         .then (r) ->
           result = r
@@ -48,7 +44,7 @@ describe 'KarmaHandler', ->
       output = ''
       result = undefined
 
-      handler = new FakeKarmaHandler('fail.xml', 1)
+      handler = new FakeKarmaHandler('fail.xml')
       handler.run('failing-test')
         .then (r) ->
           result = r
@@ -76,7 +72,7 @@ describe 'KarmaHandler', ->
       output = ''
       rejected = false
 
-      handler = new FakeKarmaHandler('empty.xml', 1)
+      handler = new FakeKarmaHandler('empty.xml')
       handler.run('error')
         .progress (data) ->
           output = output + data
@@ -93,7 +89,7 @@ describe 'KarmaHandler', ->
       output = ''
       rejected = false
 
-      handler = new FakeKarmaHandler('not_existent.xml', 1)
+      handler = new FakeKarmaHandler('not_existent.xml')
       handler.run('error')
         .progress (data) ->
           output = output + data

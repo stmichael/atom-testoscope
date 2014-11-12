@@ -5,12 +5,8 @@ RspecHandler = require '../../lib/handlers/rspec-handler'
 
 describe 'RspecHandler', ->
 
-  handler = undefined
-  mockExecData = undefined
-  noop = ->
-
   class FakeRspecHandler extends RspecHandler
-    constructor: (@reportFile, @status, options) ->
+    constructor: (@reportFile, options) ->
       super(options)
 
     _spawnCommand: ->
@@ -22,14 +18,14 @@ describe 'RspecHandler', ->
 
   describe 'configuration', ->
     it 'executes rspec', ->
-      handler = new FakeRspecHandler('report.json', 0, useBundler: false)
+      handler = new FakeRspecHandler('report.json', useBundler: false)
       expect(handler._getCommand())
         .toEqual('rspec')
       expect(handler._getCommandArgs('test.rb', 'some/path'))
         .toEqual(['--format', 'progress', '--format', 'json', '--out', 'some/path/rspec.json', 'test.rb'])
 
     it 'executes rspec with bundler', ->
-      handler = new FakeRspecHandler('report.json', 0, useBundler: true)
+      handler = new FakeRspecHandler('report.json', useBundler: true)
       expect(handler._getCommand())
         .toEqual('bundle')
       expect(handler._getCommandArgs('test.rb', 'some/path'))
@@ -41,7 +37,7 @@ describe 'RspecHandler', ->
       callback = (r) ->
         result = r
 
-      handler = new FakeRspecHandler('success.json', 0)
+      handler = new FakeRspecHandler('success.json')
       handler.run('successful-test')
         .then(callback)
 
@@ -57,7 +53,7 @@ describe 'RspecHandler', ->
       callback = (r) ->
         result = r
 
-      handler = new FakeRspecHandler('fail.json', 1)
+      handler = new FakeRspecHandler('fail.json')
       handler.run('failing-test')
         .then callback
         .progress (data) ->
@@ -86,7 +82,7 @@ describe 'RspecHandler', ->
       output = ''
       rejected = false
 
-      handler = new FakeRspecHandler('not_existent.json', 1)
+      handler = new FakeRspecHandler('not_existent.json')
       handler.run('error')
         .progress (data) ->
           output = output + data
@@ -103,7 +99,7 @@ describe 'RspecHandler', ->
       output = ''
       rejected = false
 
-      handler = new FakeRspecHandler('not_existent.json', 1)
+      handler = new FakeRspecHandler('not_existent.json')
       handler.run('error')
         .progress (data) ->
           output = output + data

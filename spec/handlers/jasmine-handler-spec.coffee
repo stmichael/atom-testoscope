@@ -6,12 +6,8 @@ JasmineHandler = require '../../lib/handlers/jasmine-handler'
 
 describe 'JasmineHandler', ->
 
-  handler = undefined
-  mockExecData = undefined
-  noop = ->
-
   class FakeJasmineHandler extends JasmineHandler
-    constructor: (@reportFile, @status) ->
+    constructor: (@reportFile) ->
 
     _spawnCommand: (defer) ->
       sourceReport = path.join(path.dirname(module.filename), '..', 'fixtures', 'junit-reports', @reportFile)
@@ -24,7 +20,7 @@ describe 'JasmineHandler', ->
     it 'returns the results', ->
       result = undefined
 
-      handler = new FakeJasmineHandler('success.xml', 0)
+      handler = new FakeJasmineHandler('success.xml')
       handler.run('successful-test')
         .then (r) ->
           result = r
@@ -39,7 +35,7 @@ describe 'JasmineHandler', ->
       output = ''
       result = undefined
 
-      handler = new FakeJasmineHandler('fail.xml', 1)
+      handler = new FakeJasmineHandler('fail.xml')
       handler.run('failing-test')
         .then (r) ->
           result = r
@@ -67,7 +63,7 @@ describe 'JasmineHandler', ->
       output = ''
       rejected = false
 
-      handler = new FakeJasmineHandler('not_existent.xml', 0)
+      handler = new FakeJasmineHandler('not_existent.xml')
       handler.run('error')
         .progress (data) ->
           output = output + data
@@ -84,7 +80,7 @@ describe 'JasmineHandler', ->
       rejected = false
       output = ''
 
-      handler = new FakeJasmineHandler('not_existent.xml', 1)
+      handler = new FakeJasmineHandler('not_existent.xml')
       handler.run('error')
         .progress (data) ->
           output = output + data
