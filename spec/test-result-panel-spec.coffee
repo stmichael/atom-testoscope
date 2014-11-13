@@ -42,6 +42,11 @@ describe 'test result panel', ->
       .toEqual ['<span style="color:#000">black</span>longer line',
         '<span style="color:#AAA">white</span>']
 
+  it "escape the output before displaying", ->
+    view.addOutput '#<ActiveRecord::Association []>'
+
+    expect(view.find('.shell-output .line:last-child').text()).toEqual '#<ActiveRecord::Association []>'
+
   it 'shows the failure message with the stacktrace', ->
     view.showFailure failure
 
