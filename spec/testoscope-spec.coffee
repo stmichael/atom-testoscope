@@ -10,7 +10,7 @@ class TestJasmineHandler extends JasmineHandler
   _getCommand: ->
     "../../node_modules/jasmine-node/bin/jasmine-node"
 
-describe "TestRunner", ->
+describe "Testoscope", ->
 
   trigger = (action) ->
     atom.workspaceView.getActiveView().trigger action
@@ -27,9 +27,9 @@ describe "TestRunner", ->
     waitsForPromise ->
       atom.workspace.open(file)
 
-  waitForStacktraceSelectionToShow = ->
+  waitForResultPanelToShow = ->
     waitsFor ->
-      atom.workspaceView.find('.stacktrace-selection li').length > 0
+      atom.workspaceView.find('.output-panel').length > 0
 
   expectStatusBarToShowRunningIcon = ->
     expect(atom.workspaceView.find('.test-result-status span')).toHaveClass('icon-clock')
@@ -43,8 +43,8 @@ describe "TestRunner", ->
   expectStatusBarToShow = (text) ->
     expect(atom.workspaceView.find('.test-result-status').text()).toEqual(text)
 
-  expectStacktraceSelectionToShow = (stacktrace) ->
-    stacktraceItems = atom.workspaceView.find('.stacktrace-selection li div:first-child').text()
+  expectStacktraceLineToBeSelected = (stacktrace) ->
+    stacktraceItems = atom.workspaceView.find('.stacktrace-line.selected').text()
     expect(stacktraceItems).toEqual(stacktrace)
 
   expectPanelToShowStacktrace = (stacktrace) ->
@@ -103,18 +103,18 @@ describe "TestRunner", ->
         expectStatusBarToShowFailureIcon()
         expectStatusBarToShow('fail_spec.js:5')
 
-    it 'shows the stack trace of the last failed test', ->
-      trigger 'testoscope:toggle-last-stack-trace'
+    it 'enables selection of a file in the stack trace', ->
+      trigger 'testoscope:focus-result-panel'
 
       runs ->
-        expectStacktraceSelectionToShow('fail_spec.js:5 at null.<anonymous>')
+        expectStacktraceLineToBeSelected('fail_spec.js:5 at null.<anonymous>')
 
     it 'opens the file selected from the stack trace', ->
       waitToOpen('example.b')
-      runTrigger 'testoscope:toggle-last-stack-trace'
-      waitForStacktraceSelectionToShow()
+      runTrigger 'testoscope:focus-result-panel'
+      waitForResultPanelToShow()
       runs ->
-        atom.workspaceView.find('.stacktrace-selection').view().trigger 'core:confirm'
+        atom.workspaceView.find('.last-failure').view().trigger 'core:confirm'
 
       waitsFor ->
         atom.workspace.getActiveTextEditor().getPath().match(/fail_spec\.js$/)

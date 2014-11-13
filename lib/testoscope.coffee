@@ -1,5 +1,4 @@
 ResultStatusView = require './result-status-view'
-StacktraceSelectView = require './stacktrace-select-view'
 TestResultPanel = require './test-result-panel'
 
 TestSuite = require './test-suite'
@@ -22,7 +21,6 @@ module.exports =
     createStatusEntry = ->
       @testSuite = new TestSuite(handlerFactory)
       @resultStatusView = new ResultStatusView
-      @stacktraceSelectView = new StacktraceSelectView
       @testResultPanel = new TestResultPanel
 
       @testSuite.onDidStart =>
@@ -45,9 +43,8 @@ module.exports =
 
       atom.workspaceView.command 'testoscope:run-all', =>
         @testSuite.run(atom.workspace.getActiveTextEditor().getPath())
-      atom.workspaceView.command 'testoscope:toggle-last-stack-trace', =>
-        unless @testSuite.wasSuccessful()
-          @stacktraceSelectView.show(@testSuite.getLastResult().getFirstFailure().stacktrace)
+      atom.workspaceView.command 'testoscope:focus-result-panel', =>
+        @testResultPanel.enableSelection()
       atom.workspaceView.command 'core:cancel', =>
         @testResultPanel.detach()
 
@@ -59,7 +56,6 @@ module.exports =
 
   deactivate: ->
     @resultStatusView.destroy() if @resultStatusView
-    @stacktraceSelectView.destroy() if @stacktraceSelectView
     @testResultPanel.destroy() if @testResultPanel
 
   handlerRegistry: handlerRegistry

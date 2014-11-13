@@ -67,3 +67,49 @@ describe 'test result panel', ->
 
     expect(view.find('.last-failure *').length).toEqual 0
     expect(view.find('.shell-output *').length).toEqual 0
+
+  describe 'enabling selection', ->
+    it 'selects the first line of the stacktrace', ->
+      view.showFailure failure
+
+      view.enableSelection()
+
+      expect(view.find('.last-failure .stacktrace-line')[0]).toHaveClass('selected')
+
+  describe 'selection enabled', ->
+    beforeEach ->
+      view.showFailure failure
+      view.enableSelection()
+
+    it 'change selection downwards', ->
+      view.find('.last-failure').view().trigger 'core:move-down'
+
+      expect(view.find('.last-failure .stacktrace-line.selected').text()).toEqual 'source.js:54 at start'
+
+    it "don't go further down than the last line", ->
+      view.find('.last-failure').view().trigger 'core:move-down'
+      view.find('.last-failure').view().trigger 'core:move-down'
+
+      expect(view.find('.last-failure .stacktrace-line.selected').text()).toEqual 'source.js:54 at start'
+
+    it 'change selection upwards', ->
+      view.find('.last-failure').view().trigger 'core:move-down'
+      view.find('.last-failure').view().trigger 'core:move-up'
+
+      expect(view.find('.last-failure .stacktrace-line.selected').text()).toEqual 'lib/file.js:3 at test_method'
+
+    it "don't go further up than the first line", ->
+      view.find('.last-failure').view().trigger 'core:move-up'
+
+      expect(view.find('.last-failure .stacktrace-line.selected').text()).toEqual 'lib/file.js:3 at test_method'
+
+    it 'open the selected file', ->
+      view.find('.last-failure').view().trigger 'core:confirm'
+
+      waitsFor ->
+        atom.workspace.getActiveTextEditor() != undefined &&
+          atom.workspace.getActiveTextEditor().getPath().match /file\.js$/
+      runs ->
+        expect(atom.workspace.getActiveTextEditor().getCursorBufferPosition()).toEqual
+          row: 2
+          column: 0

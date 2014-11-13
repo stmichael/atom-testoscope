@@ -10,4 +10,4 @@
 
 '.editor':
   'cmd-m': 'testoscope:run-all'
-  'cmd-shift-m': 'testoscope:toggle-last-stack-trace'
+  'cmd-shift-m': 'testoscope:focus-result-panel'
