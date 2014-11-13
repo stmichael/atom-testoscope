@@ -38,7 +38,7 @@ module.exports =
         @testResultPanel.showFailure(result.getFirstFailure())
       @testSuite.onWasErroneous (event) =>
         @resultStatusView.setFaulty event.message
-      @testSuite.onOutput (output) ->
+      @testSuite.onOutput (output) =>
         @testResultPanel.addOutput(output)
 
       atom.workspaceView.statusBar.appendLeft(@resultStatusView)
@@ -59,5 +59,7 @@ module.exports =
 
   deactivate: ->
     @resultStatusView.destroy() if @resultStatusView
+    @stacktraceSelectView.destroy() if @stacktraceSelectView
+    @testResultPanel.destroy() if @testResultPanel
 
   handlerRegistry: handlerRegistry
