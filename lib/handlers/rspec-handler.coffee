@@ -25,7 +25,6 @@ class RspecHandler extends BaseHandler
 
   parseErrors: (defer) ->
     fs.readdir @getReportPath(), (err, files) =>
-      console.log files
       if files.length > 0
         file = path.join(@getReportPath(), 'rspec.json')
         fs.readFile file, encoding: 'UTF-8', (err, data) =>

@@ -1,4 +1,5 @@
 {View, $$} = require 'atom'
+Convert = require 'ansi-to-html'
 
 module.exports =
 class TestResultPanel extends View
@@ -25,18 +26,25 @@ class TestResultPanel extends View
     @attach()
 
   addOutput: (text) ->
+    convert = new Convert
     lines = text.split(/\n/)
     firstLine = lines.shift()
+    @_addTextToCurrentLine(firstLine)
+    @_addTextsToNewLines(lines)
+
+  _addTextToCurrentLine: (text) ->
     lastElement = @find('.shell-output .line:last-child')
     if lastElement.length == 0
       @find('.shell-output').append $$ ->
         @div class: 'line'
       lastElement = @find('.shell-output .line:last-child')
-    lastElement.text(lastElement.text() + firstLine)
+    lastElement.append new Convert().toHtml(text)
 
+  _addTextsToNewLines: (texts) ->
     @find('.shell-output').append $$ ->
-      for line in lines
-        @div class: 'line', line
+      for line in texts
+        @div class: 'line', =>
+          @raw new Convert().toHtml(line)
 
   clear: ->
     @find('.last-failure').empty()

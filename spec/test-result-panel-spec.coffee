@@ -34,6 +34,14 @@ describe 'test result panel', ->
 
     expect(view.find('.shell-output .line:first-child').text()).toEqual 'same line'
 
+  it 'converts ansi colors to html', ->
+    view.addOutput '\x1b[30mblack'
+    view.addOutput 'longer line\n\x1b[37mwhite'
+
+    expect(view.find('.shell-output .line').map(-> $(this).html()).toArray())
+      .toEqual ['<span style="color:#000">black</span>longer line',
+        '<span style="color:#AAA">white</span>']
+
   it 'shows the failure message with the stacktrace', ->
     view.showFailure failure
 

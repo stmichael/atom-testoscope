@@ -17,7 +17,8 @@
     "xpath": "^0.0.7",
     "html-entities": "^1.1.1",
     "season": "^2.0.0",
-    "minimatch": "^1.0.0"
+    "minimatch": "^1.0.0",
+    "ansi-to-html": "^0.2.1"
   },
   "devDependencies": {
     "jasmine-node": "^1.14.0"

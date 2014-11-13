@@ -18,7 +18,6 @@ class JunitReportParser
       else
         failure = xpath.select('./failure', testcase)[0]
         stacktraceTexts = @_buildArrayedStacktrace(xpath.select('./text()', failure)[0].nodeValue)
-        console.log @_parseStacktrace(stacktraceTexts)
         stacktrace = new Stacktrace(@_parseStacktrace(stacktraceTexts))
 
         result.addFailure
