@@ -8,18 +8,17 @@ class RspecHandler extends BaseHandler
 
   constructor: (options) ->
     super
-    options = options || {}
-    @useBundler = options.useBundler
+    @options = options || {}
 
   _getCommand: (testFilePath, reportPath) ->
-    if @useBundler
-      "bundle"
+    if @options.invocation == 'rbenv'
+      'bash'
     else
       "rspec"
 
   _getCommandArgs: (testFilePath, reportPath) ->
-    if @useBundler
-      ['exec', 'rspec', '--format', 'progress', '--format', 'json', '--out', path.join(reportPath, 'rspec.json'), testFilePath]
+    if @options.invocation == 'rbenv'
+      ['-l', '-c', "eval \"$(rbenv init - bash)\" && bundle exec rspec --format progress --format json --out #{path.join(reportPath, 'rspec.json')} #{testFilePath}"]
     else
       ['--format', 'progress', '--format', 'json', '--out', path.join(reportPath, 'rspec.json'), testFilePath]
 

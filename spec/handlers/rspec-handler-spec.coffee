@@ -18,18 +18,18 @@ describe 'RspecHandler', ->
 
   describe 'configuration', ->
     it 'executes rspec', ->
-      handler = new FakeRspecHandler('report.json', useBundler: false)
+      handler = new FakeRspecHandler('report.json')
       expect(handler._getCommand())
         .toEqual('rspec')
       expect(handler._getCommandArgs('test.rb', 'some/path'))
         .toEqual(['--format', 'progress', '--format', 'json', '--out', 'some/path/rspec.json', 'test.rb'])
 
-    it 'executes rspec with bundler', ->
-      handler = new FakeRspecHandler('report.json', useBundler: true)
+    it 'executes rspec with rbenv', ->
+      handler = new FakeRspecHandler('report.json', invocation: 'rbenv')
       expect(handler._getCommand())
-        .toEqual('bundle')
+        .toEqual('bash')
       expect(handler._getCommandArgs('test.rb', 'some/path'))
-        .toEqual(['exec', 'rspec', '--format', 'progress', '--format', 'json', '--out', 'some/path/rspec.json', 'test.rb'])
+        .toEqual(['-l', '-c', "eval \"$(rbenv init - bash)\" && bundle exec rspec --format progress --format json --out some/path/rspec.json test.rb"])
 
   describe 'successful test run', ->
     it 'returns the results', ->
